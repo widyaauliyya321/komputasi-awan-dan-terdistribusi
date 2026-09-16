@@ -60,7 +60,7 @@ Ini merupakan gejala klasik dari **kesalahan asumsi tentang jaringan dan skala**
 
 ## Pitfall 3: [Single Point of Failure] — ditulis oleh [Abied Ziachuzzulfiq]
 
-**Bukti di skenario:** Pada kasus FoodGo, disebutkan bahwa satu server menangani semua modul seperti pesanan, pembayaran, dan notifikasi kurir dalam satu proses monolitik.
+**Bukti di skenario:** Saat trafik naik, satu server yang menangani semua modul (pesanan, pembayaran, notifikasi kurir) kewalahan karena semuanya berjalan di satu proses monolitik yang sama.
 
 **Kenapa ini keliru:** Ketika semua modul bergantung pada satu server, beban yang terlalu tinggi pada satu bagian dapat memengaruhi bagian lainnya. Hal ini menjadi masalah terutama ketika trafik meningkat secara tiba-tiba, misalnya saat jam makan siang atau promo besar.
 
