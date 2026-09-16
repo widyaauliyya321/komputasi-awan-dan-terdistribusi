@@ -26,9 +26,9 @@ Ini merupakan gejala klasik dari **kesalahan asumsi tentang jaringan dan skala**
 
 | Nama | NIM | Kontribusi |
 |---|---|---|
-| [nama 1] | [nim] | [pitfall/bagian yang dikerjakan] |
-| [nama 2] | [nim] | [pitfall/bagian yang dikerjakan] |
-| [nama 3] | [nim] | [pitfall/bagian yang dikerjakan] |
+| [Ni Putu Widya Auliya Pratama] | [103072400052] | [pitfall 1 The Network is Reliable] |
+| [Zafri Ahmad Fahriza] | [103072400060] | [pitfall 2 The Latency is Zero] |
+| [Abied Zilachuzzulfiq] | [103072400083] | [pitfall 3 ] |
 
 ## Pitfall 1: [The Network is Reliable] — ditulis oleh Ni Putu Widya Auliya Pratama]
 
@@ -44,17 +44,17 @@ Ini merupakan gejala klasik dari **kesalahan asumsi tentang jaringan dan skala**
 
 ---
 
-## Pitfall 2: [nama pitfall] — ditulis oleh [nama]
+## Pitfall 2: [The Latency is Zero] — ditulis oleh [Zafri Ahmad Fahriza]
 
-**Bukti di skenario:** [kutip/paraphrase bagian skenario]
+**Bukti di skenario:** Pada kasus FoodGo disebutkan bahwa “modul pesanan memanggil modul pembayaran dan menunggu tanpa batas waktu.” Selain itu, ketika jumlah pengguna meningkat, aplikasi menjadi sangat lambat dan beberapa permintaan mengalami timeout. Hal ini menunjukkan bahwa sistem seolah-olah menganggap proses komunikasi antar modul dapat berlangsung dengan cepat dan tanpa adanya keterlambatan.
 
-**Kenapa ini keliru:** [penjelasan]
+**Kenapa ini keliru:** Dalam sistem terdistribusi, komunikasi antar service tidak selalu berlangsung secara cepat. Setiap kali modul pesanan berkomunikasi dengan modul pembayaran, terdapat proses pengiriman request melalui jaringan, pemrosesan oleh service pembayaran, dan pengiriman kembali hasilnya. Waktu yang dibutuhkan bisa berubah-ubah, terutama ketika banyak pengguna mengakses sistem secara bersamaan.
 
-**Dampak ke FoodGo:** [mekanisme kegagalan konkret]
+**Dampak ke FoodGo:** Ketika sedang terjadi lonjakan pesanan, jumlah request yang masuk ke modul pembayaran juga ikut meningkat. Jika modul pembayaran mulai lambat, modul pesanan akan ikut menunggu lebih lama. Akibatnya, semakin banyak request yang tertahan dan resource server seperti thread dan koneksi akan terus digunakan. Jika kondisi tersebut berlangsung terus-menerus, performa FoodGo akan semakin menurun. Pengguna dapat mengalami aplikasi yang lambat, beberapa request mengalami timeout, dan pada kondisi yang lebih parah server dapat kehabisan resource hingga mengalami crash.
 
-**Solusi desain awal:** [usulan solusi]
+**Solusi desain awal:** FoodGo dapat memberikan timeout pada setiap komunikasi antar-service sehingga modul pesanan tidak menunggu respons pembayaran selamanya. Selain itu, FoodGo dapat menggunakan monitoring latency untuk melihat service mana yang mulai mengalami peningkatan waktu respons ketika trafik sedang tinggi.
 
-**Trade-off:** [apa yang dikorbankan/risiko dari solusi ini]
+**Trade-off:** Penggunaan asynchronous processing dapat membuat sistem lebih tahan terhadap proses yang lambat, tetapi arsitekturnya menjadi lebih kompleks. Hasil pembayaran juga mungkin tidak langsung diterima oleh modul pesanan, sehingga sistem perlu menangani status seperti pending, berhasil, atau gagal. Tim juga perlu memastikan bahwa proses yang tertunda tetap dapat dipantau dan tidak hilang.
 
 ---
 
