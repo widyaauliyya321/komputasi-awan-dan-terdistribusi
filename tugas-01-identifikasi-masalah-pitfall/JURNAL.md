@@ -3,8 +3,8 @@
 > Isi jurnal ini selama proses diskusi berlangsung, bukan ditulis ulang rapi di akhir. Tulis dengan gaya bebas — poin diskusi, kebuntuan, perubahan pikiran.
 
 ## [Tanggal diskusi 1]
-- Peserta: [nama-nama yang hadir]
-- Poin diskusi: ...
+- Peserta: Ni Putu Widya Auliya Pratama, Zafri Ahmad Fahriza, Abied Zilachuzzulfiq
+- Poin diskusi: 
 - Perbedaan pendapat (jika ada): ...
 
 ## [Tanggal diskusi 2]
