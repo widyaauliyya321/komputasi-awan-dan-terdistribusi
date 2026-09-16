@@ -28,7 +28,7 @@ Ini merupakan gejala klasik dari **kesalahan asumsi tentang jaringan dan skala**
 |---|---|---|
 | [Ni Putu Widya Auliya Pratama] | [103072400052] | [pitfall 1 The Network is Reliable] |
 | [Zafri Ahmad Fahriza] | [103072400060] | [pitfall 2 The Latency is Zero] |
-| [Abied Zilachuzzulfiq] | [103072400083] | [pitfall 3 ] |
+| [Abied Zilachuzzulfiq] | [103072400083] | [pitfall 3 Single Point of Failure] |
 
 ## Pitfall 1: [The Network is Reliable] — ditulis oleh Ni Putu Widya Auliya Pratama]
 
