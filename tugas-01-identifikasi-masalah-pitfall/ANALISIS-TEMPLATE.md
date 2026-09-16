@@ -34,7 +34,7 @@ Ini merupakan gejala klasik dari **kesalahan asumsi tentang jaringan dan skala**
 
 **Bukti di skenario:** Tim menemukan bahwa kode mereka menulis asumsi seperti `# network is always reliable, no need for retry` dan tidak ada *timeout* sama sekali pada pemanggilan antar service (modul pesanan memanggil modul pembayaran dan menunggu tanpa batas waktu).
 
-**Kenapa ini keliru:** Dalam sistem terdistribusi, layanan pesan antar dilakukan melalui jaringan yang tidak selalu berjalan dengan baik. Request dapat mengalami keterlambatan, gagal terkirim, koneksi terputus, atau layanan yang dituju tidak memberikan respons. Oleh karena itu, sistem tidak boleh berasumsi bahwa setiap proses pertukaran data selalu berhasil.
+**Kenapa ini keliru:** Dalam sistem terdistribusi, komunikasi antar service dilakukan melalui jaringan yang tidak selalu berjalan dengan baik. Request dapat mengalami keterlambatan, gagal terkirim, koneksi terputus, atau layanan yang dituju tidak memberikan respons. Oleh karena itu, sistem tidak boleh berasumsi bahwa setiap proses pertukaran data selalu berhasil.
 
 **Dampak ke FoodGo:** Ketika terjadi gangguan jaringan atau modul pembayaran tidak memberikan respons, modul pesanan akan terus menunggu. jika kondisi ini terjadi pada banyak pesanan secara bersamaan, maka akan semakin banyak request yang tertahan dan menggunakan resource server. Sehingga aplikasi menjadi lambat, beberapa permintaan mengalami timeout, dan jika dalam kondisi trafik tinggi server dapat mengalami overload hingga crash.
 
