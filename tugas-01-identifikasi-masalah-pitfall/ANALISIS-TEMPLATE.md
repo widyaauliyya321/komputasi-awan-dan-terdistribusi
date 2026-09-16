@@ -22,7 +22,7 @@ Ini merupakan gejala klasik dari **kesalahan asumsi tentang jaringan dan skala**
 3. Usulkan **solusi desain awal** (tingkat konsep, bukan kode) untuk tiap pitfall — misalnya: timeout + retry dengan backoff untuk asumsi jaringan reliabel, circuit breaker, pemisahan modul jadi service terpisah, dsb.
 4. Diskusikan **satu trade-off** dari solusi yang diusulkan (solusi tidak gratis — misalnya retry bisa memperparah beban saat *cascading failure*).
    
-**Kelompok:** [nama kelompok]
+**Kelompok:** Aul cantik
 
 | Nama | NIM | Kontribusi |
 |---|---|---|
@@ -58,17 +58,17 @@ Ini merupakan gejala klasik dari **kesalahan asumsi tentang jaringan dan skala**
 
 ---
 
-## Pitfall 3: [nama pitfall] — ditulis oleh [nama]
+## Pitfall 3: [Single Point of Failure] — ditulis oleh [Abied Ziachuzzulfiq]
 
-**Bukti di skenario:** [kutip/paraphrase bagian skenario]
+**Bukti di skenario:** Pada kasus FoodGo, disebutkan bahwa satu server menangani semua modul seperti pesanan, pembayaran, dan notifikasi kurir dalam satu proses monolitik.
 
-**Kenapa ini keliru:** [penjelasan]
+**Kenapa ini keliru:** Ketika semua modul bergantung pada satu server, beban yang terlalu tinggi pada satu bagian dapat memengaruhi bagian lainnya. Hal ini menjadi masalah terutama ketika trafik meningkat secara tiba-tiba, misalnya saat jam makan siang atau promo besar.
 
-**Dampak ke FoodGo:** [mekanisme kegagalan konkret]
+**Dampak ke FoodGo:** Server harus menangani banyak proses sekaligus sehingga resource yang tersedia semakin terbebani. Jika server sudah tidak mampu menangani beban tersebut, aplikasi menjadi lambat dan bahkan bisa crash. Karena semua modul berada di server yang sama, ketika server mengalami masalah, layanan pesanan, pembayaran, dan notifikasi kurir juga ikut terganggu.
 
-**Solusi desain awal:** [usulan solusi]
+**Solusi desain awal:** FoodGo dapat mulai memisahkan beberapa modul menjadi service yang berbeda, terutama modul yang memiliki beban tinggi seperti pembayaran dan pesanan. Dengan begitu, jika salah satu service mengalami masalah, service lainnya masih dapat berjalan.
 
-**Trade-off:** [apa yang dikorbankan/risiko dari solusi ini]
+**Trade-off:** Cara ini memang dapat mengurangi ketergantungan pada satu server, tetapi pengelolaan sistem menjadi lebih kompleks karena setiap service perlu dipantau dan komunikasi antar-service juga harus diperhatikan.
 
 ---
 
