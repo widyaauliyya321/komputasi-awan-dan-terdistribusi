@@ -74,4 +74,4 @@ Ini merupakan gejala klasik dari **kesalahan asumsi tentang jaringan dan skala**
 
 ## Kesimpulan Kelompok
 
-[Ringkasan: jika FoodGo memperbaiki ketiga pitfall ini, apa arsitektur yang disarankan secara garis besar? Kaitkan dengan Tugas 2.]
+Kesimpulan yang bisa kami dapat berdasarkan ketiga pitfall yang ditemukan, aplikasi FoodGo tersrbut membutuhkan arsitektur yang tidak tergantung pada satu server saja dan dapat menangani gangguan pada peningkatan trafik. Modul seperti pemesanan, pembayaran dan notifikasi bisa dipisahkan menjadi beberapa servivce agar beban yang didapat tidak menumpuk pada satu tempat. Lalu pada komunikasi antar-service perlu diberi timeout dan penanganan jika terjadi gangguan, jadi ketika satu service bermasalah, service lainnya tidak ikut terganggu. Dengan adanya rancangan tersebut sistem FoodGo diharapkan lebih mudah dikembangkan dan mampu menangani peningkatan jumlah trafik. Rancangan ini nantinya bisa menjadi dasar untuk melanjutkan Tugas 2 dalam menentukan arsitektur sistem terdistribusi yang lebih sesuai dengan kebutuhan aplikasi FoodGo. 
