@@ -46,9 +46,9 @@ Ini merupakan gejala klasik dari **kesalahan asumsi tentang jaringan dan skala**
 
 ## Pitfall 2: [The Latency is Zero] — ditulis oleh [Zafri Ahmad Fahriza]
 
-**Bukti di skenario:** Pada kasus FoodGo disebutkan bahwa “modul pesanan memanggil modul pembayaran dan menunggu tanpa batas waktu.” Selain itu, ketika jumlah pengguna meningkat, aplikasi menjadi sangat lambat dan beberapa permintaan mengalami timeout. Hal ini menunjukkan bahwa sistem seolah-olah menganggap proses komunikasi antar modul dapat berlangsung dengan cepat dan tanpa adanya keterlambatan.
+**Bukti di skenario:** Pada studi kasus disebutkan “modul pesanan memanggil modul pembayaran dan menunggu tanpa batas waktu.” dan juga "ketika jumlah pengguna meningkat, aplikasi menjadi sangat lambat dan beberapa permintaan mengalami timeout". 
 
-**Kenapa ini keliru:** Dalam sistem terdistribusi, komunikasi antar service tidak selalu berlangsung secara cepat. Setiap kali modul pesanan berkomunikasi dengan modul pembayaran, terdapat proses pengiriman request melalui jaringan, pemrosesan oleh service pembayaran, dan pengiriman kembali hasilnya. Waktu yang dibutuhkan bisa berubah-ubah, terutama ketika banyak pengguna mengakses sistem secara bersamaan.
+**Kenapa ini keliru:** Dalam sistem terdistribusi, komunikasi antar service tidak selalu berlangsung secara cepat, karena setiap kali modul pesanan berkomunikasi dengan modul pembayaran, terdapat proses pengiriman request melalui jaringan, pemrosesan oleh service pembayaran, dan pengiriman kembali hasilnya. Waktu yang dibutuhkan bisa berubah-ubah, terutama ketika banyak pengguna mengakses sistem secara bersamaan.
 
 **Dampak ke FoodGo:** Ketika sedang terjadi lonjakan pesanan, jumlah request yang masuk ke modul pembayaran juga ikut meningkat. Jika modul pembayaran mulai lambat, modul pesanan akan ikut menunggu lebih lama. Akibatnya, semakin banyak request yang tertahan dan resource server seperti thread dan koneksi akan terus digunakan. Jika kondisi tersebut berlangsung terus-menerus, performa FoodGo akan semakin menurun. Pengguna dapat mengalami aplikasi yang lambat, beberapa request mengalami timeout, dan pada kondisi yang lebih parah server dapat kehabisan resource hingga mengalami crash.
 
