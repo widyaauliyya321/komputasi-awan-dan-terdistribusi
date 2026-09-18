@@ -31,4 +31,4 @@
 
 | Tanggal | Tool AI | Prompt yang diberikan | Ringkasan saran/ide AI | Bagaimana diolah jadi tulisan/kode sendiri |
 |---|---|---|---|---|
-| ... | ChatGPT |  | ... | ... |
+| ... | ChatGPT | Bantu saya memahami pitfall The network is reliable pada sistem terdistribusi lalu berikan ide solusi dan trade-off nya untuk aplikasi pesan-antar makanan | AI menjelaskan bahwa request jaringan bisa gagal atau hilang, menyarankan konsep timeout, retry dengan backoff, dan circuit breaker | Ide dari AI ditulis ulang menggunakan bahasa sendiri dan dihubungkan langsung dengan skenario modul pesanan FoodGo yang menunggu modul pembayaran |
