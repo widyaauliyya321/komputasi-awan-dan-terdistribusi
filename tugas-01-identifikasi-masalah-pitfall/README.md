@@ -22,7 +22,7 @@ Ini merupakan gejala klasik dari **kesalahan asumsi tentang jaringan dan skala**
 3. Usulkan **solusi desain awal** (tingkat konsep, bukan kode) untuk tiap pitfall — misalnya: timeout + retry dengan backoff untuk asumsi jaringan reliabel, circuit breaker, pemisahan modul jadi service terpisah, dsb.
 4. Diskusikan **satu trade-off** dari solusi yang diusulkan (solusi tidak gratis — misalnya retry bisa memperparah beban saat *cascading failure*).
    
-**Kelompok:** Aul cantik
+**Kelompok:** Kelompok 9
 
 | Nama | NIM | Kontribusi |
 |---|---|---|
