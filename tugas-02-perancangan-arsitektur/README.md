@@ -14,7 +14,11 @@ Melanjutkan Tugas 1: FoodGo butuh sistem yang **decoupled** agar tim kurir dan t
 4. Analisis tertulis: kenapa gaya ini mengatasi masalah *coupling* dari Tugas 1, dan apa trade-off-nya (mis. Pub-Sub menambah kompleksitas debugging karena alur tidak linear).
 
 
-1. Pemilihan gaya arsitektur utama:
+
+
+JAWABAN:
+
+Pemilihan gaya arsitektur utama:
    Berdasarkan temuan pitfall pada Tugas 1 terutama masalah Single Point of Failure, ketergantungan jaringan, dan pemrosesan yang lambat, FoodGo tidak bisa jika mengandalkan satu pola komunikasi tunggal. Oleh karena itu, FoodGo menggunakan kombinasi Service-Oriented Architecture (SOA) dan Publish-Subscribe.
    a. SOA berbasis API Gateway digunakan untuk memisahkan fungsi utama FoodGo menjadi beberapa service yang independen dan juga berkomunikasi via REST API/RPC synchronous antara lain yaitu:
    - Service pesanan
