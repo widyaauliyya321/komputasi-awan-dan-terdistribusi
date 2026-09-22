@@ -20,11 +20,13 @@ JAWABAN:
 
 Pemilihan gaya arsitektur utama:
    Berdasarkan temuan pitfall pada Tugas 1 terutama masalah Single Point of Failure, ketergantungan jaringan, dan pemrosesan yang lambat, FoodGo tidak bisa jika mengandalkan satu pola komunikasi tunggal. Oleh karena itu, FoodGo menggunakan kombinasi Service-Oriented Architecture (SOA) dan Publish-Subscribe.
+   
    a. SOA berbasis API Gateway digunakan untuk memisahkan fungsi utama FoodGo menjadi beberapa service yang independen dan juga berkomunikasi via REST API/RPC synchronous antara lain yaitu:
    - Service pesanan
    - Service pembayaran
    - Service katalog resto
    - Service kurir atau notifikasi
+     
    b. Publish-Subscribe digunakan terutama untuk penyebaran event seperti pesanan baru dan notifikasi kepada service yang membutuhkan informasi tersebut.
 Pemilihan ini berkaitan dengan masalah pada Tugas 1, yaitu seluruh modul FoodGo sebelumnya berjalan dalam satu proses monolitik sehingga satu server menjadi titik kegagalan dan beban dari satu modul dapat memengaruhi modul lainnya.
 
