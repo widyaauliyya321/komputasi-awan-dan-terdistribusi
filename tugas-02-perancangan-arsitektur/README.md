@@ -13,6 +13,37 @@ Melanjutkan Tugas 1: FoodGo butuh sistem yang **decoupled** agar tim kurir dan t
 3. Jelaskan alur satu skenario penuh secara end-to-end di diagram (misalnya: pelanggan buat pesanan → bayar → resto terima notifikasi → kurir ditugaskan) — tunjukkan komponen mana berkomunikasi dengan siapa, dan **jenis komunikasinya** (sinkron/asinkron, request-response/event).
 4. Analisis tertulis: kenapa gaya ini mengatasi masalah *coupling* dari Tugas 1, dan apa trade-off-nya (mis. Pub-Sub menambah kompleksitas debugging karena alur tidak linear).
 
+
+1. Pemilihan gaya arsitektur utama:
+   Berdasarkan temuan pitfall pada Tugas 1 terutama masalah Single Point of Failure, ketergantungan jaringan, dan pemrosesan yang lambat, FoodGo tidak bisa jika mengandalkan satu pola komunikasi tunggal. Oleh karena itu, FoodGo menggunakan kombinasi Service-Oriented Architecture (SOA) dan Publish-Subscribe.
+   a. SOA berbasis API Gateway digunakan untuk memisahkan fungsi utama FoodGo menjadi beberapa service yang independen dan juga berkomunikasi via REST API/RPC synchronous antara lain yaitu:
+   - Service pesanan
+   - Service pembayaran
+   - Service katalog resto
+   - Service kurir atau notifikasi
+   b. Publish-Subscribe digunakan terutama untuk penyebaran event seperti pesanan baru dan notifikasi kepada service yang membutuhkan informasi tersebut.
+Pemilihan ini berkaitan dengan masalah pada Tugas 1, yaitu seluruh modul FoodGo sebelumnya berjalan dalam satu proses monolitik sehingga satu server menjadi titik kegagalan dan beban dari satu modul dapat memengaruhi modul lainnya.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Cara Membuat Diagram (Gratis, Cukup Laptop)
 
 Tidak perlu software berbayar. Dua opsi:
