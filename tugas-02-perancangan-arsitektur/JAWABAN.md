@@ -50,22 +50,19 @@ Kombinasi ini dipilih karena sesuai dengan masalah pada Tugas 1.
 ```mermaid
 graph LR
 
-    Client[Pelanggan]
+  Client[Pelanggan] -->|HTTP Request| Gateway[API Gateway]
 
-    Client -->|HTTP Request| Gateway[API Gateway]
+  Gateway -->|Sinkron| OrderSvc[Service Pesanan]
+  Gateway -->|Sinkron| RestoSvc[Service Katalog Resto]
 
-    Gateway -->|Sinkron| OrderSvc[Service Pesanan]
-    Gateway -->|Sinkron| CatalogSvc[Service Katalog Resto]
+  OrderSvc -->|REST API Sinkron| PaymentSvc[Service Pembayaran]
 
-    OrderSvc -->|REST API Sinkron| PaymentSvc[Service Pembayaran]
+  OrderSvc -->|Publish Event: OrderCreated| Broker[(Message Broker)]
+  PaymentSvc -->|Publish Event: PaymentSuccess| Broker
 
-    OrderSvc -->|Publish Event: OrderCreated| Broker[(Message Broker)]
-
-    PaymentSvc -->|Publish Event: PaymentSuccess| Broker
-
-    Broker -->|Subscribe| RestoSvc[Service Resto]
-    Broker -->|Subscribe| CourierSvc[Service Kurir]
-    Broker -->|Subscribe| NotifSvc[Service Notifikasi]
+  Broker -->|Subscribe| Resto[Service Resto]
+  Broker -->|Subscribe| Kurir[Service Kurir]
+  Broker -->|Subscribe| Notif[Service Notifikasi]
 ```
 ### Komponen
 
@@ -199,16 +196,6 @@ graph LR
 ```
 ````
 
-**Opsi B — draw.io / diagrams.net** (gratis, jalan di browser tanpa akun, atau app desktop offline di [app.diagrams.net](https://app.diagrams.net/)). Ekspor sebagai `.png` dan simpan di folder `diagram/`.
-
-## Struktur Submission
-
-```
-tugas-02-perancangan-arsitektur/
-├── README.md          # Analisis + diagram Mermaid (jika Opsi A) atau referensi ke diagram/
-├── JURNAL.md
-└── diagram/            # File .png/.drawio jika pakai Opsi B
-```
 
 ## Rubrik Penilaian (Tugas 2)
 
