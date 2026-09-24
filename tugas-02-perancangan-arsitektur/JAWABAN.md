@@ -122,7 +122,50 @@ graph LR
 8. Service Notifikasi mengirim informasi kepada pelanggan tanpa mengganggu proses service lainnya.
 
 ---
+## 4. Analisis: Mengatasi Coupling dari Tugas 1
 
+Pada Tugas 1 ditemukan bahwa seluruh modul FoodGo berjalan pada satu server dan satu aplikasi monolitik sehingga muncul **Single Point of Failure**. Ketika modul pembayaran lambat, modul pesanan ikut menunggu, kemudian seluruh server menjadi terbebani.
+
+Dengan arsitektur SOA dan Publish-Subscribe, coupling dapat dikurangi.
+
+### Perbandingan
+
+| Sebelum | Sesudah |
+|---|---|
+| Semua modul satu aplikasi | Setiap modul menjadi service terpisah |
+| Satu deploy merestart semua modul | Deploy dapat dilakukan per service |
+| Pembayaran lambat menghambat modul lain | Event membuat proses lain tetap berjalan |
+| Notifikasi bergantung langsung ke pesanan | Notifikasi menerima event melalui broker |
+| Satu server menjadi titik kegagalan | Beban tersebar ke beberapa service |
+
+### Hubungan dengan Pitfall Tugas 1
+
+- **Single Point of Failure** berkurang karena setiap service dapat berjalan sendiri.
+- **The Network is Reliable** ditangani dengan komunikasi service yang dapat menerapkan timeout dan retry.
+- **The Latency is Zero** diatasi dengan komunikasi asinkron untuk proses yang tidak membutuhkan respons langsung.
+
+---
+
+## Trade-off Arsitektur
+Meskipun lebih fleksibel, arsitektur ini juga memiliki beberapa konsekuensi.
+
+### Kelebihan
+- Service dapat dikembangkan secara independen.
+- Deployment lebih aman karena tidak perlu menghentikan seluruh aplikasi.
+- Skalabilitas lebih baik karena service tertentu dapat ditambah kapasitasnya sendiri.
+- Notifikasi tidak menghambat proses utama.
+
+### Kekurangan
+- Debugging menjadi lebih sulit karena alur komunikasi tersebar melalui event.
+- Infrastruktur bertambah karena membutuhkan Message Broker dan API Gateway.
+- Monitoring harus dilakukan pada banyak service sekaligus.
+- Konsistensi data perlu diperhatikan karena proses asinkron tidak selalu selesai pada waktu yang sama.
+---
+## Kesimpulan
+
+Berdasarkan hasil analisis Tugas 1, kombinasi **Service-Oriented Architecture (SOA)** dan **Publish-Subscribe** merupakan pilihan yang sesuai untuk FoodGo. SOA memisahkan fungsi utama menjadi service yang independen sehingga mengurangi ketergantungan pada satu aplikasi monolitik, sedangkan Publish-Subscribe memungkinkan proses notifikasi dan penugasan kurir berjalan secara asinkron tanpa menghambat alur utama pemesanan.
+
+Rancangan ini membantu mengatasi masalah coupling, meningkatkan skalabilitas, serta memungkinkan setiap service diperbarui secara terpisah, meskipun konsekuensinya adalah meningkatnya kompleksitas pengelolaan dan debugging sistem.
 
 
 
