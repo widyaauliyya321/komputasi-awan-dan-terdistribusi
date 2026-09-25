@@ -50,20 +50,22 @@ Kombinasi ini dipilih karena sesuai dengan masalah pada Tugas 1.
 ```mermaid
 graph LR
 
-  Client[Pelanggan] -->|HTTP Request| Gateway[API Gateway]
+  Client[Pelanggan] -->|HTTP request| Gateway[API Gateway]
 
-  Gateway -->|Sinkron| OrderSvc[Service Pesanan]
-  Gateway -->|Sinkron| RestoSvc[Service Katalog Resto]
+  Gateway -->|Sinkron: ambil menu| RestoSvc[Service Katalog Resto]
+  Gateway -->|Sinkron: buat pesanan| OrderSvc[Service Pesanan]
 
-  OrderSvc -->|REST API Sinkron| PaymentSvc[Service Pembayaran]
+  OrderSvc -->|"Sinkron: REST + timeout 5s, retry maks 2x backoff, circuit breaker"| PaymentSvc[Service Pembayaran]
 
-  OrderSvc -->|Publish Event: OrderCreated| Broker[(Message Broker)]
-  PaymentSvc -->|Publish Event: PaymentSuccess| Broker
+  OrderSvc -->|Publish event: OrderCreated| Broker[(Message Broker)]
+  PaymentSvc -->|Publish event: PaymentSuccess / PaymentFailed| Broker
 
-  Broker -->|Subscribe| Resto[Service Resto]
+  Broker -->|Subscribe| RestoEvt[Service Resto - siapkan pesanan]
   Broker -->|Subscribe| Kurir[Service Kurir]
   Broker -->|Subscribe| Notif[Service Notifikasi]
 ```
+
+
 ### Komponen
 
 1. **API Gateway**
