@@ -1,9 +1,25 @@
 # Jurnal Proses — Tugas 2
 
-## [Tanggal]
-- Opsi arsitektur yang dipertimbangkan: ...
-- Kenapa akhirnya pilih [SOA/Pub-Sub]: ...
-- Revisi diagram (versi 1 → versi 2, apa yang berubah dan kenapa): ...
+## 25 September 2026
+- Opsi arsitektur yang dipertimbangkan:
+Sebelum menetapkan pilihan akhir, kelompok mendiskusikan tiga opsi:
+1. Layered Architecture — mempertahankan struktur berlapis (presentation, business logic, data) tapi tetap dalam satu aplikasi. Dipertimbangkan karena paling sederhana untuk diimplementasikan, tapi ditolak karena tidak menyelesaikan akar masalah dari Tugas 1: semua modul tetap saling terikat dalam satu proses, sehingga Single Point of Failure dan cascading delay (pesanan menunggu pembayaran) tidak hilang.
+2. Peer-to-Peer (P2P) — modul saling berkomunikasi langsung tanpa perantara pusat. Dipertimbangkan untuk skenario desentralisasi penuh, tapi ditolak karena kebutuhan FoodGo bukan menghilangkan otoritas pusat (data pesanan/pembayaran tetap perlu konsisten dan mudah diaudit), dan P2P justru menambah kompleksitas koordinasi tanpa manfaat nyata untuk kasus ini.
+3. SOA dikombinasikan dengan Publish-Subscribe, memisahkan modul jadi service independen (SOA) untuk proses yang butuh jawaban langsung, dan memakai event asinkron (Pub-Sub) untuk proses yang tidak butuh jawaban seketika. Opsi ini dipilih karena paling langsung menjawab tiga pitfall yang ditemukan di Tugas 1.
+   
+- Kenapa akhirnya pilih [SOA/Pub-Sub]:
+  Kombinasi ini dipilih karena masalah di Tugas 1 punya dua sifat berbeda dan membutuhkan solusi yang berbeda pula:
+  1. Untuk Single Point of Failure, solusinya adalah memisahkan modul jadi service mandiri yang bisa berjalan dan di-deploy sendiri-sendiri → ini yang disediakan SOA.
+  2. Untuk "network is reliable" dan "latency is zero", sebagian proses (Pesanan↔Pembayaran) memang butuh jawaban sinkron dan tetap diberi timeout/retry/circuit breaker, tapi proses lain (notifikasi, penugasan kurir, update katalog) sebenarnya tidak perlu menunggu hasil dari modul lain secara langsung → ini yang disediakan Pub-Sub, karena mengubah ketergantungan "menunggu jawaban" menjadi "menerima kabar kalau sudah selesai".
+
+Memilih salah satu dari itu dianggap tidak cukup karen jika SOA saja tidak otomatis menghilangkan masalah latency kalau semua komunikasi antar-service tetap sinkron, sedangkan Pub-Sub saja tidak cocok untuk proses seperti konfirmasi pembayaran yang memang butuh jawaban seketika sebelum pelanggan bisa lanjut checkout.
+
+- Revisi diagram (versi 1 → versi 2, apa yang berubah dan kenapa):
+Versi 1 hanya melabeli komunikasi sebagai "Sinkron" tanpa detail penanganan kegagalan, dan hanya punya event sukses (PaymentSuccess) tanpa jalur gagal.
+Perubahan di versi 2:
+1. Panah OrderSvc → PaymentSvc ditambah detail timeout 5s, retry maks 2x backoff, circuit breaker — supaya klaim bahwa pitfall "network is reliable"/"latency is zero" sudah ditangani punya bukti di diagram, tidak hanya di teks.
+2. Ditambah event PaymentFailed selain PaymentSuccess agar ada jalur eksplisit saat pembayaran gagal, sejalan dengan retry/circuit breaker yang baru ditambahkan.
+3. Label panah Gateway diperjelas (Sinkron: ambil menu, Sinkron: buat pesanan) dan node Resto diberi keterangan perannya sebagai subscriber (siapkan pesanan) — supaya diagram lebih menjelaskan apa yang terjadi, bukan cuma jenis komunikasinya.
 
 ## Log Penggunaan AI (Level 2)
 
