@@ -26,5 +26,5 @@ Perubahan di versi 2:
 > Wajib diisi sesuai kebijakan Level 2 di [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Tulis "Tidak memakai AI" pada baris pertama jika memang tidak dipakai. Hanya untuk brainstorming ide/outline — bukan untuk kode/analisis/teks akhir.
 
 | Tanggal | Tool AI | Prompt yang diberikan | Ringkasan saran/ide AI | Bagaimana diolah jadi tulisan/kode sendiri |
-|24 - 09 - 2026|ChatGPT|Meminta penjelasan mengenai cara merancang diagram arsitektur berdasarkan komponen dan pola komunikasi pada sistem yang dirancang.|Memberikan penjelasan mengenai struktur diagram, hubungan antar-service, serta alur komunikasi dalam arsitektur.|Penjelasan digunakan sebagai dasar pemahaman, kemudian struktur diagram disesuaikan dengan kebutuhan dan rancangan sistem FoodGo.|
-| ... | ... | ... | ... | ... |
+|...|...|...|...|...|
+| 29-06-2026 | ChatGPT | Meminta penjelasan mengenai cara merancang diagram arsitektur berdasarkan komponen dan pola komunikasi pada sistem yang dirancang. | Memberikan penjelasan mengenai struktur diagram, hubungan antar-service, serta alur komunikasi dalam arsitektur. | sebagai dasar pemahaman, kemudian struktur diagram disesuaikan dengan kebutuhan dan rancangan sistem FoodGo. |
