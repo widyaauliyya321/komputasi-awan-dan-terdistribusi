@@ -19,7 +19,7 @@ Versi 1 hanya melabeli komunikasi sebagai "Sinkron" tanpa detail penanganan kega
 Perubahan di versi 2:
 1. Panah OrderSvc → PaymentSvc ditambah detail timeout 5s, retry maks 2x backoff, circuit breaker — supaya klaim bahwa pitfall "network is reliable"/"latency is zero" sudah ditangani punya bukti di diagram, tidak hanya di teks.
 2. Ditambah event PaymentFailed selain PaymentSuccess agar ada jalur eksplisit saat pembayaran gagal, sejalan dengan retry/circuit breaker yang baru ditambahkan.
-3. Label panah Gateway diperjelas (Sinkron: ambil menu, Sinkron: buat pesanan) dan node Resto diberi keterangan perannya sebagai subscriber (siapkan pesanan) — supaya diagram lebih menjelaskan apa yang terjadi, bukan cuma jenis komunikasinya.
+3. Label panah Gateway diperjelas (Sinkron: ambil menu, Sinkron: buat pesanan) dan node Resto diberi keterangan perannya sebagai subscriber (siapkan pesanan) — supaya diagram lebih menjelaskan apa yang terjadi, bukan cuma jenis komunikasinya. 
 
 ## Log Penggunaan AI (Level 2)
 
