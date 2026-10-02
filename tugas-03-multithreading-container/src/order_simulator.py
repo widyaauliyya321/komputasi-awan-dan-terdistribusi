@@ -8,6 +8,7 @@ Jangan mengubah nama fungsi (dipakai untuk pengecekan otomatis oleh asisten).
 import threading
 import random
 import time
+import os
 
 NUM_ORDERS = 100        # jumlah pesanan simulasi yang masuk
 NUM_WORKERS = 10        # jumlah thread pekerja
@@ -17,8 +18,10 @@ NUM_WORKERS = 10        # jumlah thread pekerja
 processed_count = 0
 
 # TODO 1: Buat objek Lock di sini untuk melindungi `processed_count`.
-# lock = threading.Lock()
+lock = threading.Lock()
 
+# Sakelar mode: USE_LOCK=1 (default) pakai lock, USE_LOCK=0 tanpa lock
+USE_LOCK = os.environ.get("USE_LOCK", "1") == "1"
 
 def process_order(order_id: int) -> None:
     """Proses satu pesanan. Dipanggil oleh tiap thread pekerja."""
@@ -28,12 +31,15 @@ def process_order(order_id: int) -> None:
     time.sleep(random.uniform(0.001, 0.01))
 
     # TODO 2: Tambahkan increment `processed_count` DI SINI.
-    # Langkah 1: jalankan dulu tanpa lock (increment biasa: processed_count += 1)
-    #            dan buktikan hasil akhirnya sering salah (< NUM_ORDERS).
-    # Langkah 2: bungkus increment dengan `with lock:` dan buktikan hasilnya
-    #            selalu tepat NUM_ORDERS. Simpan bukti kedua kondisi ini
-    #            di JURNAL.md / folder bukti/.
-    pass
+    if USE_LOCK: 
+        with lock:
+            temp = processed_count
+            time.sleep(0.0001)
+            processed_count = temp + 1
+    else:
+        temp = processed_count
+        time.sleep(0.0001)            
+        processed_count = temp + 1
 
 
 def worker(order_ids: list) -> None:
@@ -49,9 +55,15 @@ def main() -> None:
     # threading.Thread per bagian yang menjalankan `worker(...)`,
     # start semua thread, lalu join semua thread sebelum lanjut.
     threads = []
-    # ... isi logika pembagian tugas & pembuatan thread di sini ...
+    for i in range(NUM_WORKERS) :
+        bagian = order_ids[i::NUM_WORKERS] #tumpukan nota untuk pelayan ke-i
+        t = threading.Thread(target=worker, args=(bagian,))
+        threads.append(t)
 
-    for t in threads:
+    for t in threads: #semuanya mulai bersamaan
+        t.start()
+
+    for t in threads: #menunggu semuanya selesai
         t.join()
 
     print(f"Total pesanan diproses: {processed_count} (seharusnya {NUM_ORDERS})")
