@@ -48,11 +48,6 @@ Lock menjamin mutual exclusion: hanya satu thread yang boleh berada didalam bagi
 
 Seluruh langkah baca-jeda-tulis harus berada di dalam lock. Jika hanya langkah tulis yang dikunci, thread lain tetap bisa membaca nilai lama sebelum update selesai, sehingga race condition tetap terjadi.
 
-- Trade-off (analisis):
-
-Lock membuat bagian kritis berjalan satu per satu, jadi ada harga yang dibayar berupa waktu tunggu antar-thread. Namun hanya bagian kritis yang
-menjadi sekuensial. Pekerjaan lain, yaitu simulasi kerja pesanan (`time.sleep(random.uniform(0.001, 0.01))`), tetap berjalan paralel di semua thread. Ini sebanding dengan hasil yang benar, dan tetap jauh
-lebih hemat daripada membuat satu proses baru per pesanan dengan `fork()`.
 
 ## Kendala Docker
 - Error yang ditemui saat `docker build`/`docker run` dan cara memperbaikinya: ...
