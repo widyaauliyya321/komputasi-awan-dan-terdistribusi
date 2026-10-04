@@ -50,7 +50,7 @@ Seluruh langkah baca-jeda-tulis harus berada di dalam lock. Jika hanya langkah t
 
 
 ## Kendala Docker
-- Error yang ditemui saat `docker build`/`docker run` dan cara memperbaikinya: ...
+Selama proses implementasi, kelompok kami tidak menemukan kendala yang signifikan dalam penggunaan Docker. Docker Desktop dapat berjalan dengan baik, proses pembuatan image menggunakan docker build berhasil dilakukan, dan container dapat dijalankan menggunakan docker run tanpa mengalami error. Program juga dapat berjalan dengan baik di dalam container dan menghasilkan output yang sesuai, yaitu 100 pesanan berhasil diproses.
 
 ## Log Penggunaan AI (Level 2)
 
