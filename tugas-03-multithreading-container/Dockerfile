@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY src/ ./src/
 
-CMD ["python3", "src/order_simulator.py"]
+CMD ["python3", "src/order_simulator.py"] 
