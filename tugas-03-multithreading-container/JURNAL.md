@@ -48,16 +48,6 @@ Lock menjamin mutual exclusion: hanya satu thread yang boleh berada didalam bagi
 
 Seluruh langkah baca-jeda-tulis harus berada di dalam lock. Jika hanya langkah tulis yang dikunci, thread lain tetap bisa membaca nilai lama sebelum update selesai, sehingga race condition tetap terjadi.
 
-## Analisis: Mengapa menggunakan Threading?
-Penggunaan multithreading dipilih karena karakteristik proses pada FoodGo lebih banyak menangani pekerjaan yang dapat berjalan secara konkuren, seperti menerima dan memproses banyak pesanan dalam waktu yang hampir bersamaan. Dengan threading, beberapa pekerjaan dapat ditangani oleh thread dalam satu proses sehingga penggunaan resource relatif lebih ringan dibandingkan membuat banyak proses terpisah. 
-
-Pada studi kasus FoodGo, masalah yang terjadi adalah beban server meningkat ketika terjadi lonjakan pesanan, sehingga aplikasi menjadi lambat, beberapa request mengalami timeout, bahkan server dapat mengalami crash. Jika setiap pesanan ditangani menggunakan proses baru, kebutuhan resource seperti memori dan overhead pembuatan proses akan semakin besar. Hal tersebut berpotensi memperparah kondisi server yang sudah mengalami beban tinggi.
-
-Sebaliknya, multithreading memungkinkan beberapa pesanan diproses secara konkuren dalam satu proses, sehingga overhead resource lebih rendah. Pendekatan ini sesuai untuk simulasi server FoodGo yang harus menangani banyak request secara bersamaan tanpa membuat proses baru untuk setiap pesanan.
-Namun, penggunaan threading juga memiliki konsekuensi, yaitu beberapa thread dapat mengakses data bersama secara bersamaan. Oleh karena itu, pada simulasi digunakan threading.Lock() untuk melindungi variabel processed_count agar tidak terjadi race condition.
-
-Kesimpulan analisis: threading dipilih bukan karena selalu lebih cepat daripada multiprocessing, tetapi karena lebih sesuai untuk mensimulasikan banyak pekerjaan konkuren dengan overhead resource yang lebih rendah pada kasus FoodGo.
-
 
 ## Kendala Docker
 Selama proses implementasi, kelompok kami tidak menemukan kendala yang signifikan dalam penggunaan Docker. Docker Desktop dapat berjalan dengan baik, proses pembuatan image menggunakan docker build berhasil dilakukan, dan container dapat dijalankan menggunakan docker run tanpa mengalami error. Program juga dapat berjalan dengan baik di dalam container dan menghasilkan output yang sesuai, yaitu 100 pesanan berhasil diproses.
