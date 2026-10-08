@@ -10,16 +10,52 @@ Sementara MQ dipilih untuk komunikasi antara modul Pembayaran dan Kurir/Notifika
 Dengan cara ini, modul Pembayaran tetap bisa berjalan meskipun consumer sedang sibuk atau tidak aktif. Pengujian juga menunjukkan bahwa saat consumer dimatikan, 3 pesan tetap tersimpan di queue dan baru diproses setelah consumer dijalankan kembali. Jadi, MQ cocok untuk proses seperti notifikasi pembayaran yang sifatnya asinkron dan tidak membutuhkan response secara langsung.
 
 ## Kendala teknis
-- Error saat setup (mis. koneksi RabbitMQ ditolak, port bentrok): ...
+
+# Setup RabbitMQ menggunakan Docker:
+Pada setup awal, Docker kami belum dapat digunakan karena Docker Desktop belum berjalan sehingga container RabbitMQ tidak dapat dijalankan. Setelah Docker Desktop dijalankan, RabbitMQ berhasil dijalankan menggunakan Docker Compose.
+
+# Proses download image RabbitMQ:
+Saat menjalankan docker compose up -d, proses pengunduhan image rabbitmq:3-management sempat mengalami error unexpected EOF karena buruknya sinyal kami. Perintah kemudian dijalankan kembali hingga image berhasil diunduh dan container RabbitMQ berhasil dibuat dan dijalankan.
+
+# Library Python pika:
+Library pika perlu dipasang pada virtual environment karena digunakan oleh publisher dan consumer RabbitMQ. Untuk pika kami menggunakan pika==1.3.2 sesuai requirements.txt.
+
+# Pemilihan Python interpreter di VS Code:
+Pada awalnya VS Code menggunakan Python yang berbeda sehingga library pika tidak terdeteksi. Setelah interpreter diarahkan ke Python pada virtual environment mq\venv, library dapat digunakan dengan baik.
 
 ## Uji "pesan tidak hilang" (khusus Jalur B)
-- Langkah uji: matikan consumer → jalankan publisher → nyalakan consumer
-- Hasil yang diamati: ...
+
+# Langkah uji
+  1. RabbitMQ dijalankan menggunakan Docker Compose.
+  2. Consumer dijalankan terlebih dahulu untuk memastikan koneksi ke RabbitMQ berhasil.
+  3. Consumer kemudian dihentikan menggunakan Ctrl + C.
+  4. Publisher dijalankan ketika consumer dalam keadaan mati.
+  5. Publisher berhasil mengirim 3 pesan ke queue pembayaran_berhasil.
+  6. RabbitMQ Management Dashboard dibuka untuk melihat kondisi queue.
+  7. Terlihat terdapat 3 pesan Ready di queue.
+  8. Consumer kemudian dijalankan kembali.
+  9. Consumer mengambil dan memproses ketiga pesan tersebut.
+  10. Setelah semua pesan berhasil diproses dan di-acknowledge, jumlah pesan Ready kembali menjadi 0.
+
+# Hasil yang diamati
+Hasil pengujian menunjukkan bahwa pesan tidak hilang ketika consumer tidak aktif. Ketika publisher mengirimkan tiga pesan, sementara consumer dimatikan, RabbitMQ menyimpan ketiga pesan tersebut di queue pembayaran_berhasil. Dashboard menunjukkan jumlah Ready = 3.
+Setelah consumer dinyalakan kembali, ketiga pesan berhasil diterima dan diproses. Setelah proses selesai, jumlah pesan Ready menjadi 0.
+Hal ini membuktikan bahwa Message Queue memberikan mekanisme komunikasi asinkron, karena publisher dapat mengirim pesan tanpa harus menunggu consumer aktif pada saat yang sama. Pesan dapat menunggu di RabbitMQ sampai consumer tersedia untuk memprosesnya.
+
+# Hasil Pengujian RPC
+Pada pengujian RPC, server dijalankan pada port 8000, kemudian client dijalankan di terminal lain.
+    Memanggil cek_saldo('user1') ... menunggu respons sinkron
+    Hasil cek saldo: 50000
+    Waktu tempuh: 2.1339 detik
+    Memanggil proses_pembayaran('user1', 20000) ...
+    Hasil pembayaran: {'status': 'sukses', 'saldo_akhir': 30000}
+
+Hasil tersebut menunjukkan bahwa client berhasil mendapatkan saldo awal 50000 dan melakukan pembayaran 20000, sehingga saldo akhir menjadi 30000. Client juga menunggu response dari server, sehingga komunikasi berjalan secara sinkron.
 
 ## Log Penggunaan AI (Level 2)
 
 > Wajib diisi sesuai kebijakan Level 2 di [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Tulis "Tidak memakai AI" pada baris pertama jika memang tidak dipakai. Hanya untuk brainstorming ide/outline — bukan untuk kode/analisis/teks akhir.
 
 | Tanggal | Tool AI | Prompt yang diberikan | Ringkasan saran/ide AI | Bagaimana diolah jadi tulisan/kode sendiri |
-|---|---|---|---|---|
+|06-10-2026|ChatGPT|---|---|---|
 | ... | ... | ... | ... | ... |
