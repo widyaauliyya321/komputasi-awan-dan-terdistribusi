@@ -12,15 +12,19 @@ Dengan cara ini, modul Pembayaran tetap bisa berjalan meskipun consumer sedang s
 ## Kendala teknis
 
 1. Setup RabbitMQ menggunakan Docker:
+   
 Pada setup awal, Docker kami belum dapat digunakan karena Docker Desktop belum berjalan sehingga container RabbitMQ tidak dapat dijalankan. Setelah Docker Desktop dijalankan, RabbitMQ berhasil dijalankan menggunakan Docker Compose.
 
 2. Proses download image RabbitMQ:
+   
 Saat menjalankan docker compose up -d, proses pengunduhan image rabbitmq:3-management sempat mengalami error unexpected EOF karena buruknya sinyal kami. Perintah kemudian dijalankan kembali hingga image berhasil diunduh dan container RabbitMQ berhasil dibuat dan dijalankan.
 
 3. Library Python pika:
+   
 Library pika perlu dipasang pada virtual environment karena digunakan oleh publisher dan consumer RabbitMQ. Untuk pika kami menggunakan pika==1.3.2 sesuai requirements.txt.
 
 4. Pemilihan Python interpreter di VS Code:
+   
 Pada awalnya VS Code menggunakan Python yang berbeda sehingga library pika tidak terdeteksi. Setelah interpreter diarahkan ke Python pada virtual environment mq\venv, library dapat digunakan dengan baik.
 
 ## Uji "pesan tidak hilang" (khusus Jalur B)
