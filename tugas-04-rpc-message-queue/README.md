@@ -58,6 +58,14 @@ tugas-04-rpc-message-queue/
 ├── mq/             # Jalur B (jika dikerjakan)
 └── bukti/
 ```
+## Analisis
+
+Pada studi kasus FoodGo, RPC cocok digunakan untuk komunikasi antara modul Pesanan dan modul Pembayaran pada operasi yang membutuhkan respons secara langsung, seperti pengecekan saldo dan proses pembayaran. Dengan RPC, modul Pesanan dapat memanggil fungsi cek_saldo() atau proses_pembayaran() pada modul Pembayaran dan menunggu hasilnya sebelum melanjutkan proses. Hasil pengujian menunjukkan bahwa client berhasil memperoleh saldo user1 sebesar Rp50.000 dan berhasil memproses pembayaran sebesar Rp20.000 sehingga saldo akhirnya menjadi Rp30.000. 
+
+Sementara itu, Message Queue cocok digunakan untuk pengiriman notifikasi pembayaran berhasil dari modul Pembayaran kepada modul Kurir/Notifikasi. Pada kebutuhan ini, modul Pembayaran tidak perlu menunggu modul Kurir merespons karena notifikasi dapat diproses ketika Kurir sudah siap. RabbitMQ berperan sebagai perantara yang menyimpan pesan sementara. Hasil pengujian menunjukan ketika consumer dimatikan, publisher tetap berhasil mengirim tiga pesan dan RabbitMQ menunjukkan Ready = 3. Setelah consumer dinyalakan kembali, ketiga pesan berhasil diproses dan jumlah pesan menjadi Ready = 0. Dengan demikian, modul Pembayaran tetap dapat bekerja meskipun modul Kurir sedang tidak tersedia.
+
+Jika pola komunikasi digunakan pada skenario yang tidak sesuai, sistem dapat mengalami ketergantungan yang tidak diperlukan, keterlambatan proses, atau bahkan kegagalan ketika komponen yang dituju sedang bermasalah. Contohnya, jika RPC digunakan untuk mengirim notifikasi pembayaran kepada kurir, modul pembayaran harus menunggu respons dari modul kurir. Apabila modul kurir sedang down atau lambat, proses pembayaran juga dapat ikut tertunda. Sebaliknya, jika MQ digunakan untuk proses yang membutuhkan respons langsung seperti pengecekan saldo, proses menjadi kurang praktis karena komunikasi bersifat asynchronous dan hasilnya tidak dapat diterima secara langsung seperti pada RPC.
+
 
 ## Rubrik Penilaian (Tugas 4)
 
