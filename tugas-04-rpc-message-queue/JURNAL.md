@@ -57,5 +57,7 @@ Hasil tersebut menunjukkan bahwa client berhasil mendapatkan saldo awal 50000 da
 > Wajib diisi sesuai kebijakan Level 2 di [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Tulis "Tidak memakai AI" pada baris pertama jika memang tidak dipakai. Hanya untuk brainstorming ide/outline — bukan untuk kode/analisis/teks akhir.
 
 | Tanggal | Tool AI | Prompt yang diberikan | Ringkasan saran/ide AI | Bagaimana diolah jadi tulisan/kode sendiri |
-|06-10-2026|ChatGPT|---|---|---|
-| ... | ... | ... | ... | ... |
+|---|---|---|---|---|
+| 06-10-2026 | ChatGPT | Meminta penjelasan mengenai tahapan pengerjaan Tugas 4 yang mencakup implementasi RPC dan Message Queue pada studi kasus FoodGo. | Memberikan gambaran tahapan implementasi serta aspek yang perlu diuji. | Kelompok menggunakan informasi tersebut sebagai panduan, kemudian melakukan implementasi dan pengujian secara mandiri sesuai template tugas. |
+| 06-10-2026 | ChatGPT | Meminta bantuan untuk mengidentifikasi penyebab kendala pada setup Docker, RabbitMQ, dan library Python pika. | Memberikan beberapa kemungkinan penyebab error dan langkah troubleshooting. | Kelompok mencoba solusi yang diberikan secara langsung dan memverifikasi hasilnya melalui terminal serta RabbitMQ Dashboard. |
+| 06-10-2026 | ChatGPT | Menentukan metode pengujian yang sesuai untuk komunikasi RPC dan Message Queue pada Tugas 4. | Menjelaskan langkah pengujian RPC client-server dan pengujian Message Queue saat consumer tidak aktif. | Kelompok melakukan pengujian secara mandiri dan mencatat hasil aktual sebagai bukti. |
