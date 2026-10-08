@@ -44,6 +44,7 @@ Hal ini membuktikan bahwa Message Queue memberikan mekanisme komunikasi asinkron
 
 # 3. Hasil Pengujian RPC
 Pada pengujian RPC, server dijalankan pada port 8000, kemudian client dijalankan di terminal lain.
+
     Memanggil cek_saldo('user1') ... menunggu respons sinkron
     
     Hasil cek saldo: 50000
