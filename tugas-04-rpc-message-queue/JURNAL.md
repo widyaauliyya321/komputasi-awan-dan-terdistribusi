@@ -11,21 +11,21 @@ Dengan cara ini, modul Pembayaran tetap bisa berjalan meskipun consumer sedang s
 
 ## Kendala teknis
 
-# Setup RabbitMQ menggunakan Docker:
+1. Setup RabbitMQ menggunakan Docker:
 Pada setup awal, Docker kami belum dapat digunakan karena Docker Desktop belum berjalan sehingga container RabbitMQ tidak dapat dijalankan. Setelah Docker Desktop dijalankan, RabbitMQ berhasil dijalankan menggunakan Docker Compose.
 
-# Proses download image RabbitMQ:
+2. Proses download image RabbitMQ:
 Saat menjalankan docker compose up -d, proses pengunduhan image rabbitmq:3-management sempat mengalami error unexpected EOF karena buruknya sinyal kami. Perintah kemudian dijalankan kembali hingga image berhasil diunduh dan container RabbitMQ berhasil dibuat dan dijalankan.
 
-# Library Python pika:
+3. Library Python pika:
 Library pika perlu dipasang pada virtual environment karena digunakan oleh publisher dan consumer RabbitMQ. Untuk pika kami menggunakan pika==1.3.2 sesuai requirements.txt.
 
-# Pemilihan Python interpreter di VS Code:
+4. Pemilihan Python interpreter di VS Code:
 Pada awalnya VS Code menggunakan Python yang berbeda sehingga library pika tidak terdeteksi. Setelah interpreter diarahkan ke Python pada virtual environment mq\venv, library dapat digunakan dengan baik.
 
 ## Uji "pesan tidak hilang" (khusus Jalur B)
 
-# 1. Langkah uji
+## 1. Langkah uji
   1. RabbitMQ dijalankan menggunakan Docker Compose.
   2. Consumer dijalankan terlebih dahulu untuk memastikan koneksi ke RabbitMQ berhasil.
   3. Consumer kemudian dihentikan menggunakan Ctrl + C.
@@ -37,12 +37,12 @@ Pada awalnya VS Code menggunakan Python yang berbeda sehingga library pika tidak
   9. Consumer mengambil dan memproses ketiga pesan tersebut.
   10. Setelah semua pesan berhasil diproses dan di-acknowledge, jumlah pesan Ready kembali menjadi 0.
 
-# 2. Hasil yang diamati
+## 2. Hasil yang diamati
 Hasil pengujian menunjukkan bahwa pesan tidak hilang ketika consumer tidak aktif. Ketika publisher mengirimkan tiga pesan, sementara consumer dimatikan, RabbitMQ menyimpan ketiga pesan tersebut di queue pembayaran_berhasil. Dashboard menunjukkan jumlah Ready = 3.
 Setelah consumer dinyalakan kembali, ketiga pesan berhasil diterima dan diproses. Setelah proses selesai, jumlah pesan Ready menjadi 0.
 Hal ini membuktikan bahwa Message Queue memberikan mekanisme komunikasi asinkron, karena publisher dapat mengirim pesan tanpa harus menunggu consumer aktif pada saat yang sama. Pesan dapat menunggu di RabbitMQ sampai consumer tersedia untuk memprosesnya.
 
-# 3. Hasil Pengujian RPC
+## 3. Hasil Pengujian RPC
 Pada pengujian RPC, server dijalankan pada port 8000, kemudian client dijalankan di terminal lain.
 
     Memanggil cek_saldo('user1') ... menunggu respons sinkron
