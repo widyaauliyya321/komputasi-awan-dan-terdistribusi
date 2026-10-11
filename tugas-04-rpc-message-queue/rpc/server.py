@@ -40,6 +40,7 @@ def proses_pembayaran(user_id: str, jumlah: float) -> dict:
     return {
         "status": "sukses",
         "saldo_akhir": saldo_user[user_id]
+    }
     
 
 def main():
