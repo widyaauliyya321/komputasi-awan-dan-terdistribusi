@@ -27,6 +27,14 @@ class Node:
         self.leader_id = None
         self.lock = threading.Lock()
 
+        # Menandai balasan OK dan COORDINATOR
+        self.ok_received = threading.Event()
+        self.coordinator_received = threading.Event()
+
+        # Mencegah election berjalan bersamaan pada node yang sama
+        self.election_lock = threading.Lock()
+
+
     # ---------- Infrastruktur jaringan (SUDAH LENGKAP, jangan diubah) ----------
 
     def start_server(self):
@@ -67,7 +75,49 @@ class Node:
         #   - "OK": tandai bahwa ada node lebih tinggi yang masih hidup, sehingga
         #     kita TIDAK boleh mendeklarasikan diri sebagai leader.
         #   - "COORDINATOR": simpan sender_id sebagai leader_id yang baru.
-        print(f"[Node {self.node_id}] Menerima pesan '{msg_type}' dari node {sender_id} (TODO: proses ini)")
+        # print(f"[Node {self.node_id}] Menerima pesan '{msg_type}' dari node {sender_id} (TODO: proses ini)")
+
+        if msg_type == "ELECTION":
+            print(
+                f"[Node {self.node_id}] Menerima ELECTION dari node {sender_id}"
+            )
+
+            #node dgn ID lebih besar akan membalas OK
+            if self.node_id > sender_id:
+                sender_port = self.peers.get(sender_id)
+
+                if sender_port is not None:
+                    self.send_message(sender_port, "OK")
+                    print(
+                        f"[Node {self.node_id}] Mengirim OK ke node {sender_id}"           
+                    )
+
+            #node ini jg akan mencoba menjadi leader
+            threading.Thread(
+                target=self.start_election,
+                daemon=True
+            ).start()
+
+        elif msg_type == "OK":
+            if sender_id > self.node_id:
+                print(
+                    f"[Node {self.node_id}] Menerima OK dari node {sender_id}"
+                                
+                )
+                self.ok_received.set()
+
+        elif msg_type == "COORDINATOR":
+            with self.lock:
+                self.leader_id = sender_id
+
+            self.coordinator_received.set()
+            print(
+                f"[Node {self.node_id}], Node {sender_id} adalah LEADER baru"
+                            
+            )
+
+        elif msg_type == "PING":
+            pass 
 
     def start_election(self):
         """Dipanggil saat node ini mendeteksi leader tidak ada / tidak merespons."""
