@@ -215,7 +215,28 @@ class Node:
             # (mis. kirim pesan "PING" atau cukup coba connect). Jika gagal
             # (leader mati) dan node ini belum tahu leader baru, panggil
             # start_election().
-            pass
+            # pass
+            with self.lock:
+                current_leader = self.leader_id
+
+            if current_leader is None or current_leader == self.node_id:
+                continue
+
+            leader_port = self.peers.get(current_leader)
+
+            if leader_port is None:
+                continue
+
+            alive = self.send_message(leader_port, "PING")
+
+            if not alive:
+                print(f"[Node {self.node_id}] Leader {current_leader} mati!")
+
+                with self.lock:
+                    if self.leader_id == current_leader:
+                        self.leader_id = None
+
+                self.start_election()
 
 
 def main():
