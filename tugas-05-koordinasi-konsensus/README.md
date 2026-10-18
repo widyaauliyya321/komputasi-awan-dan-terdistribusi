@@ -46,6 +46,12 @@ tugas-05-koordinasi-konsensus/
 │   └── node.py
 └── bukti/          # Log/screenshot skenario start normal & leader mati
 ```
+## Analisis
+### 1. Mengapa Sistem Memerlukan Leader?
+Leader diperlukan untuk mengoordinasikan proses agar seluruh node memiliki acuan yang sama. Leader membantu mengurangi konflik dalam pengelolaan antrean pesanan. Namun, mekanisme tambahan tetap diperlukan untuk menjamin konsistensi data dan mencegah pesanan diproses lebih dari satu kali.
+
+### 2. Mengapa Menggunakan Bully Algorithm Dibandingkan Raft?
+Bully Algorithm dipilih karena sederhana dan mudah diterapkan. Leader ditentukan berdasarkan ID tertinggi dari node aktif. Dibandingkan Raft, Bully lebih mudah dipahami, tetapi tidak menyediakan mekanisme replikasi log untuk menjaga konsistensi data.
 
 ## Rubrik Penilaian (Tugas 5)
 
