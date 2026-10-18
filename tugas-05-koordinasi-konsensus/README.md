@@ -62,6 +62,12 @@ Komunikasi antar-node menggunakan **TCP Socket** melalui `localhost` dengan port
 | Node 5 | 5005 |
 
 Pesan yang digunakan dalam komunikasi meliputi `ELECTION` (memulai pemilihan), `OK` (konfirmasi node aktif), `COORDINATOR` (mengumumkan leader baru), dan `PING` (memeriksa status leader).
+### Alasan dan Kelemahan Bully Algorithm
+Bully Algorithm memilih node dengan ID tertinggi yang masih aktif karena ID digunakan sebagai prioritas dalam pemilihan leader. Node akan menghubungi node dengan ID lebih tinggi. Jika tidak ada node yang lebih tinggi merespons, node tersebut dapat menjadi leader.
+
+Kelemahannya adalah proses election dapat menghasilkan banyak pesan, terutama ketika beberapa node memulai pemilihan atau terjadi kegagalan. Selain itu, layanan yang bergantung pada leader dapat terganggu selama proses pemilihan ulang. Keterlambatan jaringan juga dapat menyebabkan node menganggap leader gagal meskipun masih aktif.
+
+
 
 ## Analisis
 ### 1. Mengapa Sistem Memerlukan Leader?
