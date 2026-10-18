@@ -46,6 +46,23 @@ tugas-05-koordinasi-konsensus/
 │   └── node.py
 └── bukti/          # Log/screenshot skenario start normal & leader mati
 ```
+
+## Deskripsi Sistem dan Implementasi
+
+FoodGo merupakan sistem pemesanan makanan berbasis sistem terdistribusi yang menggunakan lima node untuk mengelola layanan. Untuk menjaga koordinasi antar-node, sistem menerapkan **Bully Algorithm** guna memilih leader berdasarkan ID node tertinggi yang masih aktif. Pada pengujian, Node 5 menjadi leader awal, kemudian Node 4 mengambil alih ketika Node 5 mengalami kegagalan.
+
+Komunikasi antar-node menggunakan **TCP Socket** melalui `localhost` dengan port yang berbeda pada setiap node.
+
+| Node | Port |
+|------|------|
+| Node 1 | 5001 |
+| Node 2 | 5002 |
+| Node 3 | 5003 |
+| Node 4 | 5004 |
+| Node 5 | 5005 |
+
+Pesan yang digunakan dalam komunikasi meliputi `ELECTION` (memulai pemilihan), `OK` (konfirmasi node aktif), `COORDINATOR` (mengumumkan leader baru), dan `PING` (memeriksa status leader).
+
 ## Analisis
 ### 1. Mengapa Sistem Memerlukan Leader?
 Leader diperlukan untuk mengoordinasikan proses agar seluruh node memiliki acuan yang sama. Leader membantu mengurangi konflik dalam pengelolaan antrean pesanan. Namun, mekanisme tambahan tetap diperlukan untuk menjamin konsistensi data dan mencegah pesanan diproses lebih dari satu kali.
