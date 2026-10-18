@@ -53,6 +53,13 @@ Leader diperlukan untuk mengoordinasikan proses agar seluruh node memiliki acuan
 ### 2. Mengapa Menggunakan Bully Algorithm Dibandingkan Raft?
 Bully Algorithm dipilih karena sederhana dan mudah diterapkan. Leader ditentukan berdasarkan ID tertinggi dari node aktif. Dibandingkan Raft, Bully lebih mudah dipahami, tetapi tidak menyediakan mekanisme replikasi log untuk menjaga konsistensi data.
 
+### 3. Hasil Pengujian
+- **Skenario 1:** Berdasarkan catatan pengujian dalam `JURNAL.md`, kelima node berhasil dijalankan dan Node 5 dengan port 5005 terpilih sebagai leader karena memiliki ID tertinggi. Setelah terpilih, Node 5 mengirimkan pesan `COORDINATOR` kepada node lainnya untuk mengumumkan kepemimpinannya. Hasil ini menunjukkan bahwa proses pemilihan leader pada kondisi awal tercatat berjalan sesuai dengan mekanisme Bully Algorithm.
+
+- **Skenario 2:** Pada skenario kedua, Node 5 dihentikan untuk menyimulasikan kegagalan leader. Node lainnya kemudian mendeteksi bahwa leader tidak aktif dan memulai proses pemilihan ulang. Berdasarkan catatan dalam `JURNAL.md`, Node 4 terpilih sebagai leader baru dengan waktu deteksi sekitar 10 detik. Node 4 selanjutnya mengirimkan pesan `COORDINATOR` kepada Node 1, Node 2, dan Node 3 untuk mengumumkan kepemimpinannya.
+
+   Hasil tersebut menunjukkan bahwa mekanisme pemilihan ulang dapat membantu sistem menentukan leader pengganti ketika leader sebelumnya mengalami kegagalan. Namun, waktu deteksi dan keberhasilan pemilihan ulang tetap perlu diverifikasi melalui pengujian langsung..
+
 ## Rubrik Penilaian (Tugas 5)
 
 | Komponen | Bobot | Kriteria |
