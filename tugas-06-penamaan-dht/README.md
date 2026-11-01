@@ -27,8 +27,19 @@ python3 src/chord_simulation.py
 ## Tugas Analisis (`README.md`)
 
 1. Jelaskan **kenapa DHT/Chord** lebih cocok untuk kasus ini dibanding **flat naming sederhana** (mis. tabel pusat ID→IP) atau **DNS konvensional** — kaitkan dengan sifat "IP kurir sering berubah" dan kebutuhan tanpa titik gagal tunggal.
-2. Gambarkan (boleh pakai Mermaid, lihat Tugas 2) ring topology dari simulasi kalian, tandai node mana yang bertanggung jawab atas ID Kurir mana.
-3. Jelaskan apa yang terjadi pada mapping saat sebuah node **keluar** dari ring (siapa yang mengambil alih tanggung jawabnya) — dukung dengan output program.
+
+DHT (Distributed Hash Table) dengan algoritma Chord lebih cocok digunakan pada kasus FoodGo karena dapat menyimpan dan mencari mapping antara ID Kurir dengan alamat IP secara terdistribusi. Hal ini penting karena alamat IP kurir dapat berubah sewaktu-waktu ketika kurir berpindah lokasi atau jaringan, sedangkan ID kurir tetap sama sebagai identitasnya.
+
+Jika menggunakan *flat naming* sederhana berupa tabel pusat ID Kurir ke alamat IP, seluruh data harus dikelola melalui satu server pusat. Cara ini kurang efektif karena server pusat dapat menjadi bottleneck ketika banyak permintaan pencarian dilakukan secara bersamaan. Selain itu, apabila server pusat mengalami gangguan, proses pencarian alamat IP kurir juga dapat terganggu (*single point of failure*).
+
+Sementara itu, DNS konvensional menggunakan sistem penamaan hierarkis untuk menerjemahkan nama domain menjadi alamat IP. DNS sebenarnya sudah terdistribusi, tetapi mekanisme caching dan TTL dapat menyebabkan perubahan alamat IP tidak langsung diketahui oleh semua pengguna. Hal ini menjadi tantangan ketika FoodGo membutuhkan pembaruan dan pencarian alamat IP kurir yang sering berubah.
+
+Dengan menggunakan DHT/Chord, data dibagi ke beberapa node berdasarkan hasil *hashing*. Setiap node bertanggung jawab atas bagian data tertentu, sehingga tidak semua permintaan harus ditangani oleh satu server pusat. Chord juga menggunakan konsep *consistent hashing* untuk menentukan node yang bertanggung jawab atas suatu data. Ketika ada node yang bergabung atau keluar, pembagian tanggung jawab data dapat disesuaikan tanpa harus mengatur ulang seluruh data.
+
+Oleh karena itu, DHT/Chord lebih sesuai untuk FoodGo karena mendukung penyimpanan data secara terdistribusi, mengurangi ketergantungan pada satu server pusat, serta mempermudah pencarian alamat IP terbaru berdasarkan ID kurir yang tetap.
+
+3. Gambarkan (boleh pakai Mermaid, lihat Tugas 2) ring topology dari simulasi kalian, tandai node mana yang bertanggung jawab atas ID Kurir mana.
+4. Jelaskan apa yang terjadi pada mapping saat sebuah node **keluar** dari ring (siapa yang mengambil alih tanggung jawabnya) — dukung dengan output program.
 
 ## Struktur Submission
 
