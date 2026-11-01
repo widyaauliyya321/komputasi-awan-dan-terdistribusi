@@ -26,13 +26,13 @@ python3 src/chord_simulation.py
 
 ## Tugas Analisis (`README.md`)
 
-### 1. Jelaskan **kenapa DHT/Chord** lebih cocok untuk kasus ini dibanding **flat naming sederhana** (mis. tabel pusat ID→IP) atau **DNS konvensional** — kaitkan dengan sifat "IP kurir sering berubah" dan kebutuhan tanpa titik gagal tunggal.
+## 1. Jelaskan **kenapa DHT/Chord** lebih cocok untuk kasus ini dibanding **flat naming sederhana** (mis. tabel pusat ID→IP) atau **DNS konvensional** — kaitkan dengan sifat "IP kurir sering berubah" dan kebutuhan tanpa titik gagal tunggal.
 
 Pada sistem FoodGo, setiap kurir memiliki identitas berupa ID yang tetap, sedangkan alamat IP dapat berubah ketika kurir berpindah jaringan. Oleh karena itu, FoodGo membutuhkan sistem yang dapat mengelola pemetaan ID kurir ke alamat IP secara dinamis.
 
 DHT (Distributed Hash Table) dengan algoritma Chord dapat digunakan untuk memenuhi kebutuhan tersebut karena data pemetaan dibagi ke beberapa node berdasarkan hasil hashing. Setiap node memiliki tanggung jawab terhadap rentang key tertentu sehingga penyimpanan dan pencarian data tidak hanya bergantung pada satu server.
 
-## A. Perbandingan DHT/Chord dengan Flat Naming Sederhana
+### A. Perbandingan DHT/Chord dengan Flat Naming Sederhana
 
 Flat naming sederhana dapat menggunakan tabel pusat yang menyimpan pasangan ID kurir dan alamat IP. Sementara itu, Chord membagi tanggung jawab penyimpanan berdasarkan posisi hash ID kurir pada ring.
 
@@ -50,7 +50,7 @@ Pada FoodGo, penggunaan tabel pusat memiliki kelemahan karena seluruh proses reg
 
 Berbeda dengan pendekatan tersebut, Chord menentukan node penanggung jawab berdasarkan hash ID kurir. Hal ini terlihat pada hasil program, ketika `kurir-001` dengan hash 50 ditangani oleh node ID 102, `kurir-002` dengan hash 28 ditangani oleh node ID 40, dan `kurir-003` dengan hash 132 ditangani oleh node ID 136. Artinya, pemetaan kurir tidak semuanya diarahkan ke satu node.
 
-## B. Perbandingan DHT/Chord dengan DNS Konvensional
+### B. Perbandingan DHT/Chord dengan DNS Konvensional
 
 DNS merupakan sistem penamaan yang menerjemahkan nama domain menjadi alamat IP. DNS menggunakan struktur hierarkis dan mekanisme caching untuk mempercepat proses resolusi. Meskipun dapat melakukan pembaruan alamat IP, mekanisme tersebut memiliki perbedaan dengan kebutuhan FoodGo yang memerlukan pembaruan pemetaan kurir secara dinamis.
 
@@ -69,7 +69,7 @@ Sementara itu, pada Chord, ID kurir digunakan sebagai key untuk menentukan node 
 
 Untuk kebutuhan FoodGo, pendekatan ini lebih sesuai karena fokus sistem bukan menerjemahkan nama domain, melainkan menemukan alamat IP berdasarkan identitas kurir yang tetap.
 
-## C. Penerapan DHT/Chord Berdasarkan Hasil Simulasi FoodGo
+### C. Penerapan DHT/Chord Berdasarkan Hasil Simulasi FoodGo
 
 Penerapan Chord pada FoodGo dapat dilihat dari hasil pembagian tanggung jawab key kepada beberapa node. Pada awal simulasi, terdapat empat node, yaitu:
 
@@ -104,7 +104,7 @@ Meskipun terjadi perubahan tanggung jawab rentang key, tidak ada mapping kurir y
 
 Dari hasil tersebut, dapat dilihat bahwa perubahan anggota ring tidak selalu menyebabkan pemindahan mapping kurir. Perpindahan hanya diperlukan apabila terdapat key yang termasuk ke dalam rentang tanggung jawab node yang bergabung atau keluar.
 
-## Kesimpulan
+### Kesimpulan
 
 DHT/Chord lebih sesuai untuk FoodGo dibandingkan flat naming sederhana karena pengelolaan pemetaan ID kurir dan alamat IP tidak terpusat pada satu server. Setiap node memiliki tanggung jawab terhadap key tertentu sehingga beban penyimpanan dan pencarian dapat dibagi ke beberapa node.
 
@@ -115,7 +115,7 @@ Hasil simulasi juga memperlihatkan bahwa ketika node Medan bergabung dan node Ja
 Namun, implementasi simulasi masih menggunakan satu dictionary bersama dan belum menerapkan pemindahan data fisik maupun replikasi antar-node. Oleh karena itu, untuk penerapan nyata, FoodGo masih membutuhkan mekanisme replikasi dan pemulihan data agar ketersediaan layanan tetap terjaga ketika terjadi kegagalan node.
 
 ---
-### 2. Gambarkan (boleh pakai Mermaid, lihat Tugas 2) ring topology dari simulasi kalian, tandai node mana yang bertanggung jawab atas ID Kurir mana.
+## 2. Gambarkan (boleh pakai Mermaid, lihat Tugas 2) ring topology dari simulasi kalian, tandai node mana yang bertanggung jawab atas ID Kurir mana.
 
 Keadaan **setelah `node-medan-1` bergabung** (sebelum `node-jakarta-1` keluar). Garis tebal
 menunjukkan urutan ring (successor), garis putus-putus menunjukkan kurir yang dipegang tiap node.
@@ -165,7 +165,7 @@ flowchart LR
 ```
 ---
 
-### 3. Jelaskan apa yang terjadi pada mapping saat sebuah node **keluar** dari ring (siapa yang mengambil alih tanggung jawabnya) — dukung dengan output program.
+## 3. Jelaskan apa yang terjadi pada mapping saat sebuah node **keluar** dari ring (siapa yang mengambil alih tanggung jawabnya) — dukung dengan output program.
 
 Skenario di `main()`: `node-jakarta-1` (id 177) keluar. Output program:
 
@@ -176,7 +176,7 @@ kurir-001 -> 192.168.1.10
 kurir-002 -> 192.168.1.11
 ```
 
-Penjelasan:
+### Penjelasan:
 1. Tiap key dipegang node dengan id terkecil yang ≥ hash key: `kurir-002` (28) di node 40,
    `kurir-001` (50) di node 102, `kurir-003` (132) di node 136. **`node-jakarta-1` (177) tidak
    memegang kurir mana pun**, karena tidak ada kurir dengan hash di rentang 137 … 177.
@@ -197,7 +197,7 @@ Pada **join**, `node-medan-1` (id 123) bergabung dan successor lamanya adalah `n
 (id 136). Rentang barunya 103 … 123 tidak berisi kurir mana pun, jadi log menyatakan
 "tidak ada key yang berpindah tanggung jawab" dan lookup tidak berubah.
 
-Ringkasan:
+### Ringkasan:
 
 | Peristiwa | Key yang berpindah | Keterangan |
 |---|---|---|
