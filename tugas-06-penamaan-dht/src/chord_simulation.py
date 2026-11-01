@@ -105,22 +105,61 @@ class ChordRing:
         ke node dengan hash terkecil di ring (karena ring melingkar)."""
         # TODO 6: implementasikan logika successor di atas menggunakan
         # self.nodes.keys(). Kembalikan node_id (bukan IP).
-        pass
+        if not self.nodes:
+            raise RuntimeError("Tidak ada node di dalam ring.")
+
+        sorted_ids = sorted(self.nodes.keys())
+
+        for node_id in sorted_ids:
+            if node_id >= key_hash:
+                return node_id
+
+        # Wrap-around: kembali ke ID node terkecil.
+        return sorted_ids[0]
 
     def register_kurir(self, kurir_id: str, ip_kurir: str):
         """Simpan mapping ID Kurir -> IP di node yang bertanggung jawab."""
         key_hash = hash_id(kurir_id)
         # TODO 7: panggil find_successor(key_hash) untuk menentukan node
         # penanggung jawab, lalu simpan (kurir_id, ip_kurir) ke self.data[key_hash].
-        pass
+        successor_id = self.find_successor(key_hash)
+        self.data[key_hash] = (kurir_id, ip_kurir)
+
+        print(
+            f"Kurir '{kurir_id}' (hash={key_hash}) terdaftar "
+            f"dengan IP {ip_kurir}; node penanggung jawab "
+            f"id={successor_id} ({self.nodes[successor_id]})"
+        )
+
 
     def lookup(self, kurir_id: str) -> str | None:
         """Cari alamat IP terkini untuk sebuah ID Kurir."""
         key_hash = hash_id(kurir_id)
         # TODO 8: gunakan find_successor(key_hash) untuk menemukan node
         # penanggung jawab, lalu kembalikan ip_kurir dari self.data jika ada.
-        pass
+        if not self.nodes:
+            print("[LOOKUP] Ring kosong.")
+            return None
 
+        successor_id = self.find_successor(key_hash)
+
+        if key_hash not in self.data:
+            print(f"[LOOKUP] Kurir '{kurir_id}' tidak ditemukan.")
+            return None
+
+        stored_kurir_id, ip_kurir = self.data[key_hash]
+
+        if stored_kurir_id != kurir_id:
+            print(f"[LOOKUP] Kurir '{kurir_id}' tidak ditemukan.")
+            return None
+
+        print(
+            f"[LOOKUP] {kurir_id}: hash={key_hash}, "
+            f"node penanggung jawab id={successor_id} "
+            f"({self.nodes[successor_id]})"
+        )
+
+        return ip_kurir
 
 def main():
     ring = ChordRing()
