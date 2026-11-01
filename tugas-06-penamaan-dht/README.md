@@ -26,13 +26,13 @@ python3 src/chord_simulation.py
 
 ## Tugas Analisis (`README.md`)
 
-1. Jelaskan **kenapa DHT/Chord** lebih cocok untuk kasus ini dibanding **flat naming sederhana** (mis. tabel pusat ID→IP) atau **DNS konvensional** — kaitkan dengan sifat "IP kurir sering berubah" dan kebutuhan tanpa titik gagal tunggal.
+# 1. Jelaskan **kenapa DHT/Chord** lebih cocok untuk kasus ini dibanding **flat naming sederhana** (mis. tabel pusat ID→IP) atau **DNS konvensional** — kaitkan dengan sifat "IP kurir sering berubah" dan kebutuhan tanpa titik gagal tunggal.
 
 Pada sistem FoodGo, setiap kurir memiliki identitas berupa ID yang tetap, sedangkan alamat IP dapat berubah ketika kurir berpindah jaringan. Oleh karena itu, FoodGo membutuhkan sistem yang dapat mengelola pemetaan ID kurir ke alamat IP secara dinamis.
 
 DHT (Distributed Hash Table) dengan algoritma Chord dapat digunakan untuk memenuhi kebutuhan tersebut karena data pemetaan dibagi ke beberapa node berdasarkan hasil hashing. Setiap node memiliki tanggung jawab terhadap rentang key tertentu sehingga penyimpanan dan pencarian data tidak hanya bergantung pada satu server.
 
-### A. Perbandingan DHT/Chord dengan Flat Naming Sederhana
+## A. Perbandingan DHT/Chord dengan Flat Naming Sederhana
 
 Flat naming sederhana dapat menggunakan tabel pusat yang menyimpan pasangan ID kurir dan alamat IP. Sementara itu, Chord membagi tanggung jawab penyimpanan berdasarkan posisi hash ID kurir pada ring.
 
@@ -50,7 +50,7 @@ Pada FoodGo, penggunaan tabel pusat memiliki kelemahan karena seluruh proses reg
 
 Berbeda dengan pendekatan tersebut, Chord menentukan node penanggung jawab berdasarkan hash ID kurir. Hal ini terlihat pada hasil program, ketika `kurir-001` dengan hash 50 ditangani oleh node ID 102, `kurir-002` dengan hash 28 ditangani oleh node ID 40, dan `kurir-003` dengan hash 132 ditangani oleh node ID 136. Artinya, pemetaan kurir tidak semuanya diarahkan ke satu node.
 
-### B. Perbandingan DHT/Chord dengan DNS Konvensional
+## B. Perbandingan DHT/Chord dengan DNS Konvensional
 
 DNS merupakan sistem penamaan yang menerjemahkan nama domain menjadi alamat IP. DNS menggunakan struktur hierarkis dan mekanisme caching untuk mempercepat proses resolusi. Meskipun dapat melakukan pembaruan alamat IP, mekanisme tersebut memiliki perbedaan dengan kebutuhan FoodGo yang memerlukan pembaruan pemetaan kurir secara dinamis.
 
@@ -69,7 +69,7 @@ Sementara itu, pada Chord, ID kurir digunakan sebagai key untuk menentukan node 
 
 Untuk kebutuhan FoodGo, pendekatan ini lebih sesuai karena fokus sistem bukan menerjemahkan nama domain, melainkan menemukan alamat IP berdasarkan identitas kurir yang tetap.
 
-### C. Penerapan DHT/Chord Berdasarkan Hasil Simulasi FoodGo
+## C. Penerapan DHT/Chord Berdasarkan Hasil Simulasi FoodGo
 
 Penerapan Chord pada FoodGo dapat dilihat dari hasil pembagian tanggung jawab key kepada beberapa node. Pada awal simulasi, terdapat empat node, yaitu:
 
@@ -90,13 +90,13 @@ Setelah node bergabung, sistem melakukan registrasi terhadap tiga kurir. Hasilny
 
 Hasil tersebut menunjukkan bahwa setiap kurir memiliki key yang menentukan node penanggung jawabnya. Proses pencarian dilakukan menggunakan fungsi `lookup()` sehingga sistem dapat menemukan alamat IP berdasarkan ID kurir.
 
-**1. Ketika node baru bergabung**
+1. Ketika node baru bergabung
 
 Pada simulasi, `node-medan-1` dengan ID 123 bergabung ke dalam ring. Berdasarkan mekanisme Chord, node baru mengambil alih rentang key setelah predecessor ID 102 sampai dengan ID 123, yang sebelumnya menjadi bagian tanggung jawab node ID 136.
 
 Namun, hasil program menampilkan pesan bahwa tidak ada mapping kurir yang berpindah ke node baru. Hal tersebut terjadi karena tidak ada hash kurir yang berada pada rentang 103–123. Oleh karena itu, pemetaan ketiga kurir tetap berada pada node penanggung jawab sebelumnya. Hasil `lookup("kurir-001")` juga tetap menghasilkan IP `192.168.1.10`.
 
-**2. Ketika node keluar**
+2. Ketika node keluar
 
 Selanjutnya, `node-jakarta-1` dengan ID 177 keluar dari ring. Node tersebut sebelumnya bertanggung jawab atas rentang key setelah ID 136 sampai dengan ID 177. Setelah node keluar, tanggung jawab rentang tersebut dialihkan kepada successor berikutnya, yaitu node dengan ID terkecil, `node-bandung-1` dengan ID 40. Proses ini menggunakan mekanisme wrap-around karena pencarian kembali ke awal ring setelah mencapai ID terbesar.
 
@@ -104,7 +104,7 @@ Meskipun terjadi perubahan tanggung jawab rentang key, tidak ada mapping kurir y
 
 Dari hasil tersebut, dapat dilihat bahwa perubahan anggota ring tidak selalu menyebabkan pemindahan mapping kurir. Perpindahan hanya diperlukan apabila terdapat key yang termasuk ke dalam rentang tanggung jawab node yang bergabung atau keluar.
 
-### Kesimpulan
+## Kesimpulan
 
 DHT/Chord lebih sesuai untuk FoodGo dibandingkan flat naming sederhana karena pengelolaan pemetaan ID kurir dan alamat IP tidak terpusat pada satu server. Setiap node memiliki tanggung jawab terhadap key tertentu sehingga beban penyimpanan dan pencarian dapat dibagi ke beberapa node.
 
