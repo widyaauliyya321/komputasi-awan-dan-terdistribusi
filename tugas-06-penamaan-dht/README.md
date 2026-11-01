@@ -26,7 +26,7 @@ python3 src/chord_simulation.py
 
 ## Tugas Analisis (`README.md`)
 
-# 1. Jelaskan **kenapa DHT/Chord** lebih cocok untuk kasus ini dibanding **flat naming sederhana** (mis. tabel pusat ID→IP) atau **DNS konvensional** — kaitkan dengan sifat "IP kurir sering berubah" dan kebutuhan tanpa titik gagal tunggal.
+### 1. Jelaskan **kenapa DHT/Chord** lebih cocok untuk kasus ini dibanding **flat naming sederhana** (mis. tabel pusat ID→IP) atau **DNS konvensional** — kaitkan dengan sifat "IP kurir sering berubah" dan kebutuhan tanpa titik gagal tunggal.
 
 Pada sistem FoodGo, setiap kurir memiliki identitas berupa ID yang tetap, sedangkan alamat IP dapat berubah ketika kurir berpindah jaringan. Oleh karena itu, FoodGo membutuhkan sistem yang dapat mengelola pemetaan ID kurir ke alamat IP secara dinamis.
 
@@ -114,10 +114,7 @@ Hasil simulasi juga memperlihatkan bahwa ketika node Medan bergabung dan node Ja
 
 Namun, implementasi simulasi masih menggunakan satu dictionary bersama dan belum menerapkan pemindahan data fisik maupun replikasi antar-node. Oleh karena itu, untuk penerapan nyata, FoodGo masih membutuhkan mekanisme replikasi dan pemulihan data agar ketersediaan layanan tetap terjaga ketika terjadi kegagalan node.
 
-3. Gambarkan (boleh pakai Mermaid, lihat Tugas 2) ring topology dari simulasi kalian, tandai node mana yang bertanggung jawab atas ID Kurir mana.
-4. Jelaskan apa yang terjadi pada mapping saat sebuah node **keluar** dari ring (siapa yang mengambil alih tanggung jawabnya) — dukung dengan output program.
-
-## 2. Diagram ring
+### 2. Gambarkan (boleh pakai Mermaid, lihat Tugas 2) ring topology dari simulasi kalian, tandai node mana yang bertanggung jawab atas ID Kurir mana.
 
 Keadaan **setelah `node-medan-1` bergabung** (sebelum `node-jakarta-1` keluar). Garis tebal
 menunjukkan urutan ring (successor), garis putus-putus menunjukkan kurir yang dipegang tiap node.
@@ -165,6 +162,46 @@ flowchart LR
     J1["kurir-001<br/>hash=50"] -.-> M102
     J3["kurir-003<br/>hash=132"] -.-> M136
 ```
+---
+
+### 3. Jelaskan apa yang terjadi pada mapping saat sebuah node **keluar** dari ring (siapa yang mengambil alih tanggung jawabnya) — dukung dengan output program.
+
+Skenario di `main()`: `node-jakarta-1` (id 177) keluar. Output program:
+
+```
+[LEAVE] Node node-jakarta-1 (id=177) keluar dari ring
+        (node ini tidak memegang key apa pun)
+kurir-001 -> 192.168.1.10
+kurir-002 -> 192.168.1.11
+```
+
+Penjelasan:
+1. Tiap key dipegang node dengan id terkecil yang ≥ hash key: `kurir-002` (28) di node 40,
+   `kurir-001` (50) di node 102, `kurir-003` (132) di node 136. **`node-jakarta-1` (177) tidak
+   memegang kurir mana pun**, karena tidak ada kurir dengan hash di rentang 137 … 177.
+2. Karena itu saat node keluar **tidak ada mapping yang perlu dipindahkan**, dan ketiga lookup
+   tetap mengembalikan IP yang sama. Ini justru sifat penting Chord: node yang keluar hanya
+   memengaruhi key di rentangnya sendiri, sedangkan key lain tidak tersentuh.
+3. Tanggung jawab **atas rentangnya** tetap berpindah. Setelah node 177 hilang, tidak ada node
+   dengan id ≥ 137 yang tersisa di atas node 136, sehingga key apa pun di rentang 137 … 255
+   jatuh ke node terkecil, yaitu **`node-bandung-1` (id 40)** lewat wrap-around.
+   Uji langsung `find_successor()` pada ring awal ada di `bukti/uji_wraparound.txt`
+   (mis. hash 217 → node 40).
+4. Sebagai ilustrasi (bukan bagian output program): seandainya ada kurir dengan hash 175, kurir itu
+   dipegang `node-jakarta-1` dan setelah node keluar otomatis diambil alih `node-bandung-1`. Logika
+   `leave()` yang mencari successor baru untuk tiap key pemegang lama akan mencatatnya sebagai
+   `[LEAVE] ... memindahkan data kurir ... ke node 40`.
+
+Pada **join**, `node-medan-1` (id 123) bergabung dan successor lamanya adalah `node-surabaya-1`
+(id 136). Rentang barunya 103 … 123 tidak berisi kurir mana pun, jadi log menyatakan
+"tidak ada key yang berpindah tanggung jawab" dan lookup tidak berubah.
+
+Ringkasan:
+
+| Peristiwa | Key yang berpindah | Keterangan |
+|---|---|---|
+| join `node-medan-1` (123) | tidak ada | rentang 103 … 123 kosong; successor lama = node-surabaya-1 |
+| leave `node-jakarta-1` (177) | tidak ada | node tidak memegang key; rentang 137 … 177 pindah ke node-bandung-1 (wrap-around) |
 
 ## Struktur Submission
 
