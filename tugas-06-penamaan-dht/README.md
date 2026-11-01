@@ -117,6 +117,55 @@ Namun, implementasi simulasi masih menggunakan satu dictionary bersama dan belum
 3. Gambarkan (boleh pakai Mermaid, lihat Tugas 2) ring topology dari simulasi kalian, tandai node mana yang bertanggung jawab atas ID Kurir mana.
 4. Jelaskan apa yang terjadi pada mapping saat sebuah node **keluar** dari ring (siapa yang mengambil alih tanggung jawabnya) — dukung dengan output program.
 
+## 2. Diagram ring
+
+Keadaan **setelah `node-medan-1` bergabung** (sebelum `node-jakarta-1` keluar). Garis tebal
+menunjukkan urutan ring (successor), garis putus-putus menunjukkan kurir yang dipegang tiap node.
+
+```mermaid
+flowchart LR
+    subgraph RING["Ring Chord (m=8, id 0-255), searah jarum jam"]
+        direction LR
+        N40(["node-bandung-1<br/>id=40"]) ==> N102(["node-jakarta-2<br/>id=102"])
+        N102 ==> N123(["node-medan-1<br/>id=123"])
+        N123 ==> N136(["node-surabaya-1<br/>id=136"])
+        N136 ==> N177(["node-jakarta-1<br/>id=177"])
+        N177 ==>|"wrap-around"| N40
+    end
+
+    K2["kurir-002<br/>hash=28"] -.-> N40
+    K1["kurir-001<br/>hash=50"] -.-> N102
+    K3["kurir-003<br/>hash=132"] -.-> N136
+```
+
+Tabel tanggung jawab pada keadaan tersebut:
+
+| Node (id) | Rentang key yang ditangani | Kurir yang dipegang |
+|---|---|---|
+| node-bandung-1 (40) | 178 … 255 dan 0 … 40 (wrap) | kurir-002 (28) |
+| node-jakarta-2 (102) | 41 … 102 | kurir-001 (50) |
+| node-medan-1 (123) | 103 … 123 | - |
+| node-surabaya-1 (136) | 124 … 136 | kurir-003 (132) |
+| node-jakarta-1 (177) | 137 … 177 | - |
+
+Keadaan **setelah `node-jakarta-1` keluar**: rentang 137 … 177 kini menjadi milik `node-bandung-1`
+(rentangnya melebar menjadi 137 … 255 dan 0 … 40 lewat wrap-around).
+
+```mermaid
+flowchart LR
+    subgraph RING2["Ring setelah node-jakarta-1 keluar"]
+        direction LR
+        M40(["node-bandung-1<br/>id=40"]) ==> M102(["node-jakarta-2<br/>id=102"])
+        M102 ==> M123(["node-medan-1<br/>id=123"])
+        M123 ==> M136(["node-surabaya-1<br/>id=136"])
+        M136 ==>|"wrap-around"| M40
+    end
+
+    J2["kurir-002<br/>hash=28"] -.-> M40
+    J1["kurir-001<br/>hash=50"] -.-> M102
+    J3["kurir-003<br/>hash=132"] -.-> M136
+```
+
 ## Struktur Submission
 
 ```
