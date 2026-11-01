@@ -29,16 +29,35 @@ class ChordRing:
         menjadi tanggung jawab node baru ini dari successor lamanya."""
         node_id = hash_id(node_name)
 
-        # TODO 1: tambahkan node_id -> node_ip ke self.nodes.
-        # TODO 2: cari successor LAMA dari node_id ini (successor sebelum node
-        # baru bergabung, gunakan find_successor() dengan node_id INI dikecualikan
-        # dulu dari self.nodes saat mencari).
-        # TODO 3: pindahkan semua key di self.data yang seharusnya menjadi
-        # tanggung jawab node baru (key dengan hash <= node_id, tapi masih
-        # dipegang oleh successor lama) ke bawah tanggung jawab node baru.
-        # (Untuk simulasi sederhana, cukup print log siapa mengambil alih apa -
-        # tidak perlu benar-benar memindahkan struktur data kompleks.)
-        print(f"[TODO] Node '{node_name}' (id={node_id}) bergabung, alamat {node_ip}")
+        if node_id in self.nodes:
+            print(f"[INFO] Node '{node_name}' sudah ada di ring")
+            return
+
+        self.nodes[node_id] = node_ip
+
+        self.nodes.pop(node_id)
+
+        if self.nodes:
+            old_successor = self.find_successor(node_id)
+        else:
+            old_successor = None
+
+        self.nodes[node_id] = node_ip
+        
+        if old_successor is not None:
+            for key_hash, (kurir_id, ip_kurir) in self.data.items():
+
+                self.nodes.pop(node_id)
+                old_owner = self.find_successor(key_hash)
+                self.nodes[node_id] = node_ip\
+                new_owner = self.find_successor(key_hash)
+
+                if old_owner == old_successor and new_owner == node_id:
+                    print(
+                        f"[JOIN] Data kurir '{kurir_id}' "
+                        f"(hash={key_hash}) diambil alih oleh node "
+                        f"{node_id}"
+                    )
 
     def leave(self, node_name: str):
         """Keluarkan sebuah node dari ring. Data yang dipegangnya harus
