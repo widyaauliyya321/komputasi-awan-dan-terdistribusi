@@ -30,34 +30,36 @@ class ChordRing:
         node_id = hash_id(node_name)
 
         if node_id in self.nodes:
-            print(f"[INFO] Node '{node_name}' sudah ada di ring")
+            print(
+                f"[INFO] Node '{node_name}' (id={node_id}) sudah ada; "
+                "tidak ditambahkan dua kali"
+            )
             return
-
-        self.nodes[node_id] = node_ip
-
-        self.nodes.pop(node_id)
-
-        if self.nodes:
-            old_successor = self.find_successor(node_id)
-        else:
-            old_successor = None
-
-        self.nodes[node_id] = node_ip
         
-        if old_successor is not None:
-            for key_hash, (kurir_id, ip_kurir) in self.data.items():
+        old_owners = {}
+        for key_hash in self.data:
+            old_owners[key_hash] = (
+                self.find_successor(key_hash) if self.nodes else None
+            )
 
-                self.nodes.pop(node_id)
-                old_owner = self.find_successor(key_hash)
-                self.nodes[node_id] = node_ip\
-                new_owner = self.find_successor(key_hash)
+        self.nodes[node_id] = node_ip
+        print(f"Node '{node_name}' (id={node_id}) bergabung, alamat {node_ip}")
 
-                if old_owner == old_successor and new_owner == node_id:
-                    print(
-                        f"[JOIN] Data kurir '{kurir_id}' "
-                        f"(hash={key_hash}) diambil alih oleh node "
-                        f"{node_id}"
-                    )
+        moved = []
+        for key_hash, (kurir_id, ip_kurir) in self.data.items():
+            new_owner = self.find_successor(key_hash)
+
+            if new_owner == node_id and old_owners[key_hash] != node_id:
+                moved.append((key_hash, kurir_id, ip_kurir))
+
+        if moved:
+            for key_hash, kurir_id, ip_kurir in moved:
+                print(
+                    f"Mapping {kurir_id} (hash={key_hash}) "
+                    f"berpindah tanggung jawab ke node id={node_id}"
+                )
+        else:
+            print("Tidak ada mapping kurir yang berpindah ke node baru.")
 
     def leave(self, node_name: str):
         """Keluarkan sebuah node dari ring. Data yang dipegangnya harus
