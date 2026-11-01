@@ -104,16 +104,6 @@ Meskipun terjadi perubahan tanggung jawab rentang key, tidak ada mapping kurir y
 
 Dari hasil tersebut, dapat dilihat bahwa perubahan anggota ring tidak selalu menyebabkan pemindahan mapping kurir. Perpindahan hanya diperlukan apabila terdapat key yang termasuk ke dalam rentang tanggung jawab node yang bergabung atau keluar.
 
-### Kesimpulan
-
-DHT/Chord lebih sesuai untuk FoodGo dibandingkan flat naming sederhana karena pengelolaan pemetaan ID kurir dan alamat IP tidak terpusat pada satu server. Setiap node memiliki tanggung jawab terhadap key tertentu sehingga beban penyimpanan dan pencarian dapat dibagi ke beberapa node.
-
-Dibandingkan DNS konvensional, Chord lebih sesuai untuk kebutuhan pemetaan ID kurir yang tetap dengan alamat IP yang dapat berubah. Pembaruan dilakukan pada key kurir yang sama tanpa harus mengubah identitasnya atau bergantung pada mekanisme cache DNS.
-
-Hasil simulasi juga memperlihatkan bahwa ketika node Medan bergabung dan node Jakarta-1 keluar, pembagian tanggung jawab pada ring dapat berubah tanpa mengganggu hasil pencarian kurir yang diuji. Dengan demikian, Chord mendukung pengelolaan data yang lebih terdistribusi dan fleksibel ketika jumlah node dalam sistem FoodGo berubah.
-
-Namun, implementasi simulasi masih menggunakan satu dictionary bersama dan belum menerapkan pemindahan data fisik maupun replikasi antar-node. Oleh karena itu, untuk penerapan nyata, FoodGo masih membutuhkan mekanisme replikasi dan pemulihan data agar ketersediaan layanan tetap terjaga ketika terjadi kegagalan node.
-
 ---
 ## 2. Gambarkan (boleh pakai Mermaid, lihat Tugas 2) ring topology dari simulasi kalian, tandai node mana yang bertanggung jawab atas ID Kurir mana.
 
@@ -203,6 +193,9 @@ Pada **join**, `node-medan-1` (id 123) bergabung dan successor lamanya adalah `n
 |---|---|---|
 | join `node-medan-1` (123) | tidak ada | rentang 103 … 123 kosong; successor lama = node-surabaya-1 |
 | leave `node-jakarta-1` (177) | tidak ada | node tidak memegang key; rentang 137 … 177 pindah ke node-bandung-1 (wrap-around) |
+
+## Kesimpulan
+Berdasarkan hasil analisis dan simulasi, DHT/Chord merupakan pendekatan yang sesuai untuk sistem FoodGo karena mampu mengelola pemetaan ID kurir ke alamat IP secara terdistribusi. Setiap kurir memiliki ID tetap yang digunakan untuk menemukan alamat IP terbarunya, meskipun kurir berpindah jaringan. Berbeda dengan flat naming yang bergantung pada satu server pusat dan DNS yang menggunakan mekanisme cache, Chord membagi tanggung jawab penyimpanan ke beberapa node melalui proses hashing dan pencarian successor. Ketika node baru bergabung atau node lama keluar, pembagian tanggung jawab key dapat menyesuaikan secara otomatis melalui mekanisme join, leave, dan wrap-around. Hasil simulasi menunjukkan bahwa perubahan topologi tidak mengganggu pencarian data kurir yang diuji. Namun, implementasi masih berupa simulasi dengan satu dictionary bersama sehingga belum menerapkan pemindahan data fisik dan replikasi antar-node. Oleh karena itu, diperlukan pengembangan lebih lanjut agar sistem FoodGo dapat memiliki ketersediaan dan ketahanan data yang lebih baik ketika terjadi kegagalan node.
 
 ## Struktur Submission
 
