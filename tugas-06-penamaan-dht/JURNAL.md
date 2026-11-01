@@ -1,18 +1,19 @@
 # Jurnal Proses — Tugas 6
 
 ## Implementasi find_successor
-- Kesalahan pertama yang ditemui (mis. lupa wrap-around di ring): ...
-Pada versi awal, fungsi find_successor() hanya mencari node yang memiliki ID lebih besar atau sama dengan key_hash, lalu memilih ID terkecil dari kandidat yang ditemukan. Masalah muncul ketika hash key lebih besar dari seluruh ID node yang ada. Misalnya, hash 217 pada ring yang berisi node 40, 102, 136, dan 177 tidak memiliki kandidat successor, sehingga fungsi mengembalikan None. Jika kondisi ini terjadi saat kurir didaftarkan, sistem tidak dapat menentukan node yang bertanggung jawab dan proses lookup() juga gagal menemukan kurir tersebut. Kesalahan ini awalnya tidak terlihat karena tiga kurir yang digunakan dalam pengujian memiliki hash 28, 50, dan 132, yang semuanya masih berada di bawah ID node terbesar, yaitu 177. Bug baru diketahui setelah fungsi diuji menggunakan hash di ujung ring. Bukti pengujian terdapat pada bukti/bug_tanpa_wraparound.txt.
+- Kesalahan pertama yang ditemui (mis. lupa wrap-around di ring): 
+Pada implementasi awal, fungsi find_successor() hanya mencari node yang memiliki ID lebih besar atau sama dengan key_hash, lalu memilih ID terkecil dari kandidat yang ditemukan. Masalah muncul ketika hash key lebih besar dari seluruh ID node yang ada. Misalnya, hash 217 pada ring yang berisi node 40, 102, 136, dan 177 tidak memiliki kandidat successor, sehingga fungsi mengembalikan None. Jika kondisi ini terjadi saat kurir didaftarkan, sistem tidak dapat menentukan node yang bertanggung jawab dan proses lookup() juga gagal menemukan kurir tersebut. Kesalahan ini awalnya tidak terlihat karena tiga kurir yang digunakan dalam pengujian memiliki hash 28, 50, dan 132, yang semuanya masih berada di bawah ID node terbesar, yaitu 177. Bug baru diketahui setelah fungsi diuji menggunakan hash di ujung ring. 
 
-- Cara memperbaikinya: ...
+- Cara memperbaikinya: 
 Perbaikan dilakukan dengan menambahkan mekanisme wrap-around sesuai sifat ring Chord yang melingkar. Jika tidak ditemukan node dengan ID lebih besar atau sama dengan key_hash, pencarian akan kembali ke node dengan ID terkecil di dalam ring. Dengan begitu, find_successor(217) akan mengembalikan ID 40, yaitu node-bandung-1. Selain itu, ditambahkan pengecekan untuk memastikan ring tidak dalam keadaan kosong, serta pengujian wrap-around pada fungsi main() agar mekanisme tersebut dapat dibuktikan melalui output program.
 
 ## Skenario join/leave
-- Hasil sebelum & sesudah node baru bergabung: ...
-Sebelum node baru bergabung, ring terdiri dari empat node dengan ID 40, 102, 136, dan 177. Mapping kurir-002 dengan hash 28 disimpan pada node-bandung-1, kurir-001 dengan hash 50 pada node-jakarta-2, dan kurir-003 dengan hash 132 pada node-surabaya-1. Setelah node-medan-1 dengan ID 123 bergabung, node tersebut mengambil alih sebagian rentang tanggung jawab yang sebelumnya dimiliki node-surabaya-1. Namun, tidak ada mapping kurir yang berpindah karena tidak terdapat kurir dengan hash pada rentang 103–123. Hasil lookup("kurir-001") juga tetap menunjukkan IP 192.168.1.10. Hal ini sesuai dengan konsep Chord, yaitu node baru hanya mengambil alih key yang berada di antara predecessor dan ID node tersebut.
+- Hasil sebelum & sesudah node baru bergabung: 
+Sebelum node baru bergabung, ring terdiri dari empat node dengan ID 40, 102, 136, dan 177. Mapping kurir-002 dengan hash 28 disimpan pada node-bandung-1, kurir-001 dengan hash 50 pada node-jakarta-2, dan kurir-003 dengan hash 132 pada node-surabaya-1.
+Setelah node-medan-1 dengan ID 123 bergabung, node tersebut mengambil alih sebagian rentang tanggung jawab yang sebelumnya dimiliki node-surabaya-1. Namun, tidak ada mapping kurir yang berpindah karena tidak terdapat kurir dengan hash pada rentang 103–123. Hasil lookup("kurir-001") juga tetap menunjukkan IP 192.168.1.10. Hal ini sesuai dengan konsep Chord, yaitu node baru hanya mengambil alih key yang berada di antara predecessor dan ID node tersebut.
 
-- Hasil sebelum & sesudah node keluar: ...
-Ketika node-jakarta-1 dengan ID 177 keluar dari ring, node tersebut tidak menyimpan mapping kurir apa pun. Oleh karena itu, tidak ada data yang perlu dipindahkan ke node lain dan hasil lookup("kurir-001") serta lookup("kurir-002") tetap menunjukkan IP yang sama. Meskipun tidak ada mapping yang berpindah, tanggung jawab atas rentang 137–177 beralih ke node dengan ID terkecil, yaitu node-bandung-1, sesuai mekanisme wrap-around. Perilaku tersebut juga diuji secara langsung melalui fungsi find_successor(). Bukti pengujian terdapat pada bukti/uji_wraparound.txt.
+- Hasil sebelum & sesudah node keluar: 
+Ketika node-jakarta-1 dengan ID 177 keluar dari ring, node tersebut tidak menyimpan mapping kurir apa pun. Oleh karena itu, tidak ada data yang perlu dipindahkan ke node lain dan hasil lookup("kurir-001") serta lookup("kurir-002") tetap menunjukkan IP yang sama. Meskipun tidak ada mapping yang berpindah, tanggung jawab atas rentang 137–177 beralih ke node dengan ID terkecil, yaitu node-bandung-1, sesuai mekanisme wrap-around. Perilaku tersebut juga diuji secara langsung melalui fungsi find_successor().
 
 ## Log Penggunaan AI (Level 2)
 
