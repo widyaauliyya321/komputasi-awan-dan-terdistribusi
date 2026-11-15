@@ -16,7 +16,27 @@ Setelah mempertimbangkan beberapa model konsistensi, kelompok kami menyimpulkan 
 Selain itu, FoodGo dapat menerapkan Read-Your-Writes Consistency sebagai pendekatan tambahan agar pelanggan tetap dapat melihat perubahan saldo yang baru saja dilakukan meskipun berpindah server. Dengan penerapan tersebut, diharapkan masalah penolakan transaksi akibat pembacaan saldo lama dapat dikurangi dan informasi saldo pelanggan menjadi lebih konsisten.
 
 ## Simulasi (jika dikerjakan)
-- Hasil skenario naif vs Read-Your-Writes: ...
+- Hasil skenario naif vs Read-Your-Writes: 
+
+Berdasarkan simulasi yang telah dilakukan menggunakan Python, terdapat perbedaan hasil antara sistem tanpa Read-Your-Writes dan sistem yang sudah menerapkan Read-Your-Writes.
+
+1. Skenario naif (tanpa Read-Your-Writes)
+
+Pada skenario pertama, pelanggan melakukan top-up sebesar Rp50.000 melalui server Jakarta. Server Jakarta berhasil menyimpan perubahan saldo tersebut, tetapi karena proses replikasi membutuhkan waktu 2 detik, server Bandung belum menerima pembaruan.
+
+Ketika dilakukan pembacaan saldo melalui server Bandung, hasil yang ditampilkan masih Rp0, padahal saldo sebenarnya sudah Rp50.000. Hal ini menunjukkan terjadinya inconsistent read, yaitu ketika replika membaca data yang belum diperbarui.
+
+2. Skenario dengan Read-Your-Writes
+
+Pada skenario kedua, pelanggan melakukan top-up tambahan sebesar Rp20.000 sehingga saldo menjadi Rp70.000. Sistem kemudian menggunakan nomor versi (version) untuk memeriksa apakah perubahan saldo sudah diterima oleh server Bandung.
+
+Ketika server Bandung belum memiliki versi terbaru, sistem akan menunggu sampai proses replikasi selesai. Setelah pembaruan diterima, server Bandung berhasil membaca saldo sebesar Rp70.000.
+
+Dengan demikian, mekanisme Read-Your-Writes berhasil mengatasi masalah pembacaan saldo lama dengan memastikan bahwa perubahan yang dilakukan pelanggan sebelumnya sudah terlihat ketika pelanggan melakukan pembacaan berikutnya.
+
+Kesimpulan simulasi:
+
+Dari hasil pengujian, dapat disimpulkan bahwa skenario naif masih memungkinkan terjadinya perbedaan data antara server Jakarta dan Bandung akibat keterlambatan replikasi. Sementara itu, setelah menerapkan Read-Your-Writes, sistem dapat memastikan bahwa pelanggan membaca saldo berdasarkan versi terbaru yang dibutuhkan. Hal ini dapat mengurangi kesalahan pembacaan saldo ketika pelanggan berpindah server.
 
 ## Log Penggunaan AI (Level 2)
 
