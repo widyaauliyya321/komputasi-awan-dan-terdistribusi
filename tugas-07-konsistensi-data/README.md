@@ -39,7 +39,7 @@ Namun, karena sistem ini berkaitan dengan uang, FoodGo tetap perlu memastikan ba
 
 3. Gambarkan **diagram alir urutan (sequence diagram)** yang menunjukkan operasi read/write antara pelanggan, server Jakarta, server Bandung, dan proses replikasi — untuk skenario **tanpa** jaminan konsistensi (bug terjadi) DAN skenario **dengan** solusi yang kalian usulkan (bug teratasi). Pakai Mermaid (`sequenceDiagram`) di `README.md` — lihat contoh cara pakai di Tugas 2.
 
-'''mermaid
+```mermaid
 sequenceDiagram
     actor P as Pelanggan
     participant J as Server Jakarta
