@@ -65,7 +65,7 @@ sequenceDiagram
     B->>B: Memperbarui saldo menjadi Rp100.000
 
     Note over P,B: Terjadi bug karena server Bandung membaca saldo lama
-
+```
 
 ### Bagian 2 — Simulasi (opsional, nilai tambah)
 
