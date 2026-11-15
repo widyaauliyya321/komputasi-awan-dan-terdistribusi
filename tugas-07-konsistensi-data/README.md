@@ -39,6 +39,31 @@ Namun, karena sistem ini berkaitan dengan uang, FoodGo tetap perlu memastikan ba
 
 3. Gambarkan **diagram alir urutan (sequence diagram)** yang menunjukkan operasi read/write antara pelanggan, server Jakarta, server Bandung, dan proses replikasi — untuk skenario **tanpa** jaminan konsistensi (bug terjadi) DAN skenario **dengan** solusi yang kalian usulkan (bug teratasi). Pakai Mermaid (`sequenceDiagram`) di `README.md` — lihat contoh cara pakai di Tugas 2.
 
+sequenceDiagram
+    actor P as Pelanggan
+    participant J as Server Jakarta
+    participant R as Proses Replikasi
+    participant B as Server Bandung
+
+    Note over J,B: Saldo awal di kedua server Rp50.000
+
+    P->>J: Request top-up Rp50.000
+    J->>J: Update saldo menjadi Rp100.000
+    J-->>P: Top-up berhasil
+    J->>R: Kirim perubahan saldo ke Bandung
+
+    Note over R,B: Replikasi masih berlangsung
+
+    P->>B: Pesan makanan Rp75.000
+    B->>B: Read saldo pelanggan
+    B->>B: Saldo terbaca Rp50.000
+    B-->>P: Transaksi ditolak (saldo tidak cukup)
+
+    R-->>B: Kirim update saldo Rp100.000
+    B->>B: Update saldo menjadi Rp100.000
+
+    Note over P,B: Bug terjadi karena Bandung membaca saldo lama
+
 ### Bagian 2 — Simulasi (opsional, nilai tambah)
 
 Skeleton `src/replica_simulation.py` mensimulasikan dua replika (Jakarta & Bandung) dengan delay replikasi buatan. Lengkapi TODO untuk:
