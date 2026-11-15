@@ -10,7 +10,7 @@ Data saldo *e-wallet* pelanggan FoodGo berbeda antara server wilayah **Jakarta**
 
 ### Bagian 1 — Analisis (wajib)
 
-1. Tentukan: apakah kasus ini **membutuhkan Sequential Consistency** (semua replika melihat urutan operasi yang sama) atau **cukup Eventual Consistency** (replika akan konsisten "pada akhirnya", boleh sementara berbeda)? Berikan argumen berbasis dampak bisnis (mis. kasus saldo *e-wallet* jauh lebih sensitif dibanding kasus "jumlah like" di media sosial).
+### 1. Tentukan: apakah kasus ini **membutuhkan Sequential Consistency** (semua replika melihat urutan operasi yang sama) atau **cukup Eventual Consistency** (replika akan konsisten "pada akhirnya", boleh sementara berbeda)? Berikan argumen berbasis dampak bisnis (mis. kasus saldo *e-wallet* jauh lebih sensitif dibanding kasus "jumlah like" di media sosial).
 
 ### Hasil Analisis 1:
 Menurut kelompok kami, penggunaan Eventual Consistency saja belum cukup untuk menangani data saldo e-wallet FoodGo. Kami memilih Sequential Consistency karena saldo pelanggan harus memiliki informasi yang konsisten di setiap server.
@@ -21,7 +21,7 @@ Penggunaaan Sequential Consistency memastikan bahwa operasi dari seluruh proses 
 
 Kesimpulan: Menurut kelompok kami, Sequential Consistency lebih sesuai untuk pengelolaan saldo e-wallet FoodGo dibandingkan hanya menggunakan Eventual Consistency. Hal ini karena kesalahan informasi saldo bisa langsung memengaruhi transaksi pelanggan.
 
-2. Jika kalian menyimpulkan Eventual Consistency saja **tidak cukup** untuk skenario ini, usulkan pendekatan **Client-Centric Consistency** yang relevan (mis. *Read-Your-Writes*: pelanggan yang baru top-up harus selalu melihat saldo terbarunya sendiri, walau replika lain belum sinkron).
+### 2. Jika kalian menyimpulkan Eventual Consistency saja **tidak cukup** untuk skenario ini, usulkan pendekatan **Client-Centric Consistency** yang relevan (mis. *Read-Your-Writes*: pelanggan yang baru top-up harus selalu melihat saldo terbarunya sendiri, walau replika lain belum sinkron).
 
 ### Hasil Analisis 2:
 
@@ -37,10 +37,10 @@ Dengan cara ini, pelanggan tidak perlu khawatir melihat saldo lama hanya karena 
 
 Namun, karena sistem ini berkaitan dengan uang, FoodGo tetap perlu memastikan bahwa proses pemotongan saldo berjalan dengan aman. Misalnya, sistem harus mencegah pemotongan saldo dua kali atau transaksi yang membuat saldo menjadi tidak sesuai. Hal ini karena Read-Your-Writes hanya menjamin perubahan pengguna terlihat pada pembacaan berikutnya, bukan menjamin seluruh proses transaksi keuangan berjalan aman secara otomatis.
 
-3. Gambarkan **diagram alir urutan (sequence diagram)** yang menunjukkan operasi read/write antara pelanggan, server Jakarta, server Bandung, dan proses replikasi — untuk skenario **tanpa** jaminan konsistensi (bug terjadi) DAN skenario **dengan** solusi yang kalian usulkan (bug teratasi). Pakai Mermaid (`sequenceDiagram`) di `README.md` — lihat contoh cara pakai di Tugas 2.
+### 3. Gambarkan **diagram alir urutan (sequence diagram)** yang menunjukkan operasi read/write antara pelanggan, server Jakarta, server Bandung, dan proses replikasi — untuk skenario **tanpa** jaminan konsistensi (bug terjadi) DAN skenario **dengan** solusi yang kalian usulkan (bug teratasi). Pakai Mermaid (`sequenceDiagram`) di `README.md` — lihat contoh cara pakai di Tugas 2.
 
 ### Hasil Analisis 3:
-## 1. Diagram tanpa jaminan konsistensi (bug terjadi)
+### 1. Diagram tanpa jaminan konsistensi (bug terjadi)
    Pada skenario ini, proses replikasi antara server Jakarta dan Bandung mengalami keterlambatan. Akibatnya, server Bandung masih membaca saldo lama meskipun pelanggan sudah berhasil melakukan top-up melalui server Jakarta.
 
 ```mermaid
@@ -80,11 +80,79 @@ Akibatnya, sistem menolak transaksi karena menganggap saldo pelanggan tidak menc
 
 Dari kejadian tersebut dapat dilihat bahwa keterlambatan replikasi menyebabkan perbedaan data antara kedua server dan membuat transaksi pelanggan gagal.
 
-## 2. Diagram dengan solusi (bug teratasi)
+### 2. Diagram dengan solusi (bug teratasi)
 
-Pada skenario ini, FoodGo menerapkan Sequential Consistency dan pendekatan Client-Centric Consistency, khususnya Read-Your-Writes Consistency.
 
-Dengan pendekatan ini, server Bandung akan memastikan bahwa perubahan saldo yang sebelumnya dilakukan pelanggan sudah diterapkan sebelum membaca saldo untuk memproses transaksi.
+### a. Penerapan Solusi Sequential Consistency
+Pada skenario ini, FoodGo menerapkan Sequential Consistency sesuai dengan pendekatan yang diusulkan pada hasil analisis 1. Pendekatan ini memastikan seluruh server melihat dan menerapkan urutan operasi yang sama. Setiap perubahan data diberikan nomor urut (sequence number) oleh proses replikasi agar operasi dapat diterapkan secara berurutan pada server Jakarta maupun Bandung. Dengan demikian, ketika pelanggan melakukan top-up melalui server Jakarta dan kemudian melakukan pemesanan melalui server Bandung, perubahan saldo sebelumnya harus sudah diterapkan sebelum operasi berikutnya diproses.
+
+
+```mermaid
+sequenceDiagram
+    actor P as Pelanggan
+    participant J as Server Jakarta
+    participant R as Proses Replikasi
+    participant B as Server Bandung
+
+    Note over J,B: Saldo awal Rp50.000
+
+    P->>J: Melakukan top-up Rp50.000
+    J->>R: Mengirim operasi top-up
+    R->>R: Memberikan sequence number 1
+
+    R->>J: Menerapkan operasi nomor 1
+    J->>J: Update saldo menjadi Rp100.000
+    R->>B: Menerapkan operasi nomor 1
+    B->>B: Update saldo menjadi Rp100.000
+
+    J-->>R: Konfirmasi operasi diterapkan
+    B-->>R: Konfirmasi operasi diterapkan
+    R-->>J: Replikasi operasi nomor 1 selesai
+    J-->>P: Top-up berhasil
+
+    Note over J,B: Operasi nomor 1 telah diterapkan pada kedua server
+
+    P->>B: Memesan makanan Rp75.000
+    B->>R: Meminta pembacaan saldo
+    R->>R: Memberikan sequence number 2
+    R-->>B: Urutan pembacaan nomor 2 dapat diproses
+
+    B->>B: Membaca saldo Rp100.000
+    B->>B: Memvalidasi saldo pelanggan
+
+    B->>R: Mengirim operasi pemotongan saldo Rp75.000
+    R->>R: Memberikan sequence number 3
+
+    R->>J: Menerapkan operasi nomor 3
+    J->>J: Update saldo menjadi Rp25.000
+    R->>B: Menerapkan operasi nomor 3
+    B->>B: Update saldo menjadi Rp25.000
+
+    J-->>R: Konfirmasi operasi diterapkan
+    B-->>R: Konfirmasi operasi diterapkan
+
+    B-->>P: Pesanan berhasil, sisa saldo Rp25.000
+
+    Note over J,B: Kedua server menerapkan operasi dalam urutan yang sama
+
+```
+
+Penjelasan diagram:
+
+Pada skenario ini, pelanggan memiliki saldo awal sebesar Rp50.000. Kemudian pelanggan melakukan top-up sebesar Rp50.000 melalui server Jakarta. Server Jakarta mengirimkan operasi top-up ke proses replikasi untuk diberikan nomor urut (sequence number) 1.
+
+Setelah mendapatkan nomor urut, perubahan saldo diterapkan pada server Jakarta dan Bandung. Kedua server kemudian memberikan konfirmasi bahwa operasi tersebut telah diterapkan. Dengan demikian, saldo pada kedua server menjadi Rp100.000 sebelum pelanggan melanjutkan transaksi.
+
+Selanjutnya, pelanggan berpindah ke server Bandung untuk memesan makanan seharga Rp75.000. Permintaan pembacaan saldo diberikan nomor urut 2 dan diproses setelah operasi top-up sebelumnya selesai diterapkan. Server Bandung kemudian membaca saldo sebesar Rp100.000 dan melakukan validasi saldo pelanggan.
+
+Karena saldo mencukupi, server Bandung mengirimkan operasi pemotongan saldo sebesar Rp75.000 kepada proses replikasi. Operasi tersebut diberikan nomor urut 3 dan diterapkan pada kedua server. Setelah proses pembaruan selesai, saldo pelanggan menjadi Rp25.000 dan pesanan berhasil diproses.
+
+Dengan penerapan Sequential Consistency, seluruh server melihat dan menerapkan urutan operasi yang sama, yaitu top-up, pembacaan saldo, kemudian pemotongan saldo. Hal ini mencegah terjadinya pembacaan saldo lama akibat perbedaan urutan penerapan operasi antarserver.
+
+
+
+### b. Penerapan Solusi Client-Centric Consistency
+Pada skenario ini, FoodGo menerapkan solusi Client-Centric Consistency, khususnya Read-Your-Writes Consistency, sesuai dengan pendekatan yang diusulkan pada hasil analisis 2. Pendekatan ini memastikan bahwa perubahan saldo yang sebelumnya dilakukan pelanggan sudah diterapkan sebelum server Bandung membaca saldo untuk memproses transaksi.
 
 ```mermaid
 sequenceDiagram
@@ -133,18 +201,27 @@ Setelah pembaruan diterima, server Bandung membaca saldo sebesar Rp100.000. Kare
 
 Dengan cara ini, pelanggan tidak lagi mengalami penolakan transaksi hanya karena server Bandung masih membaca saldo lama.
 
-## 3. Perbandingan kedua diagram 
+### 3. Perbandingan kedua diagram 
 
-| Aspek | Tanpa Solusi | Dengan Solusi |
-|---|---|---|
-| Saldo awal | Rp50.000 | Rp50.000 |
-| Top-up | Rp50.000 | Rp50.000 |
-| Saldo setelah top-up di Jakarta | Rp100.000 | Rp100.000 |
-| Kondisi replikasi | Terlambat | Dipastikan diterapkan sebelum membaca |
-| Saldo yang dibaca Bandung | Rp50.000 | Rp100.000 |
-| Pesanan makanan | Rp75.000 | Rp75.000 |
-| Hasil transaksi | Ditolak | Berhasil |
-| Sisa saldo | Tidak berubah | Rp25.000 |
+| Aspek | Tanpa Solusi | Sequential Consistency | Client-Centric (Read-Your-Writes) |
+|---|---|---|---|
+| Saldo awal | Rp50.000 | Rp50.000 | Rp50.000 |
+| Top-up | Rp50.000 | Rp50.000 | Rp50.000 |
+| Saldo setelah top-up di Jakarta | Rp100.000 | Rp100.000 | Rp100.000 |
+| Kondisi replikasi | Terlambat | Operasi diterapkan sesuai urutan yang sama | Perubahan pelanggan dipastikan sudah diterapkan sebelum dibaca |
+| Mekanisme | Replikasi tanpa jaminan konsistensi | Menggunakan sequence number | Menggunakan write identifier |
+| Saldo yang dibaca Bandung | Rp50.000 | Rp100.000 | Rp100.000 |
+| Pesanan makanan | Rp75.000 | Rp75.000 | Rp75.000 |
+| Hasil transaksi | Ditolak | Berhasil | Berhasil |
+| Sisa saldo | Tidak berubah (Rp50.000) | Rp25.000 | Rp25.000 |
+
+Penjelasan Perbandingan:
+
+Berdasarkan ketiga diagram tersebut, terlihat perbedaan proses pengelolaan saldo antara kondisi tanpa jaminan konsistensi, Sequential Consistency, dan Client-Centric Consistency. Pada kondisi tanpa solusi, keterlambatan replikasi menyebabkan server Bandung masih membaca saldo lama sebesar Rp50.000 sehingga transaksi ditolak.
+
+Sementara itu, pada Sequential Consistency, seluruh server menerapkan operasi berdasarkan urutan yang sama sehingga server Bandung dapat membaca saldo terbaru sebesar Rp100.000 sebelum memproses transaksi. Pada Client-Centric Consistency dengan pendekatan Read-Your-Writes, server Bandung memastikan perubahan saldo yang sebelumnya dilakukan pelanggan sudah diterapkan sebelum melakukan pembacaan.
+
+Dengan demikian, kedua pendekatan solusi dapat mengatasi masalah pembacaan saldo lama pada skenario FoodGo, tetapi memiliki mekanisme dan cakupan jaminan konsistensi yang berbeda. Sequential Consistency berfokus pada kesamaan urutan operasi seluruh proses, sedangkan Read-Your-Writes berfokus pada kemampuan pelanggan untuk melihat kembali perubahan data yang telah dilakukannya sendiri.
 
 ### Bagian 2 — Simulasi (opsional, nilai tambah)
 
@@ -156,27 +233,9 @@ Skeleton `src/replica_simulation.py` mensimulasikan dua replika (Jakarta & Bandu
 python3 src/replica_simulation.py
 ```
 
-## Struktur Submission
+### Kesimpulan
+Berdasarkan hasil analisis, dapat disimpulkan bahwa pengelolaan data saldo e-wallet FoodGo membutuhkan penerapan Sequential Consistency karena berkaitan langsung dengan transaksi keuangan pelanggan. Penggunaan Eventual Consistency saja belum cukup karena masih memungkinkan terjadinya perbedaan saldo antarserver selama proses replikasi berlangsung. Kondisi tersebut dapat menyebabkan transaksi pelanggan ditolak meskipun saldo sebenarnya mencukupi.
 
-```
-tugas-07-konsistensi-data/
-├── README.md      # Analisis konsistensi + sequence diagram Mermaid
-├── JURNAL.md
-├── src/            # (opsional) simulasi replikasi
-└── bukti/          # (jika mengerjakan simulasi) output program
-```
+Untuk mengatasi masalah tersebut, FoodGo dapat menerapkan Client-Centric Consistency, khususnya Read-Your-Writes Consistency. Pendekatan ini memastikan bahwa perubahan saldo yang dilakukan pelanggan, seperti top-up, tetap dapat terbaca ketika pelanggan berpindah server. Dengan demikian, server Bandung harus memastikan pembaruan saldo dari server Jakarta sudah diterapkan sebelum memproses transaksi.
 
-## Rubrik Penilaian (Tugas 7)
-
-| Komponen | Bobot | Kriteria |
-|---|---|---|
-| Ketepatan pemilihan model konsistensi | 30% | Argumen berbasis dampak bisnis nyata, bukan hafalan definisi |
-| Kualitas sequence diagram | 30% | Menunjukkan jelas titik kegagalan & titik perbaikan |
-| Usulan solusi client-centric | 25% | Solusi konkret dan dapat diimplementasikan (bukan wacana abstrak) |
-| Proses & kontribusi kelompok | 15% | `JURNAL.md`, commit history (+ bonus jika simulasi dikerjakan) |
-
-## Batasan Penggunaan AI (Level 2)
-
-Kebijakan **Level 2 (AI Assisted Idea Generation & Structuring)** berlaku — lihat [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Boleh bertanya konsep umum consistency model ke AI untuk brainstorming; **tidak boleh** meminta AI menuliskan analisis akhir/sequence diagram atau isi `# TODO` di `src/replica_simulation.py` yang tinggal ditempel. Catat pemakaian AI di "Log Penggunaan AI" pada `JURNAL.md`.
-
-- Sebagai bukti pemahaman konsep (bukan hafalan jawaban skenario FoodGo saja), `README.md` wajib menyertakan **satu skenario tambahan** yang kalian buat sendiri (mis. kasus lain di aplikasi ojek online) dan menentukan model konsistensi yang tepat untuk skenario tambahan tersebut.
+Berdasarkan perbandingan kedua diagram, penerapan solusi tersebut dapat mencegah server membaca saldo lama sehingga transaksi pelanggan dapat diproses sesuai kondisi saldo sebenarnya. Namun, FoodGo juga perlu memastikan keamanan transaksi melalui validasi saldo dan pencegahan pemotongan saldo ganda. Dengan penerapan konsistensi data yang tepat, FoodGo dapat menjaga keakuratan informasi saldo, mengurangi kegagalan transaksi, serta meningkatkan kepercayaan pelanggan terhadap layanan.
