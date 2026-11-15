@@ -24,4 +24,6 @@ Selain itu, FoodGo dapat menerapkan Read-Your-Writes Consistency sebagai pendeka
 
 | Tanggal | Tool AI | Prompt yang diberikan | Ringkasan saran/ide AI | Bagaimana diolah jadi tulisan/kode sendiri |
 |---|---|---|---|---|
-| ... | ... | ... | ... | ... |
+| 12 November 2026 | ChatGPT | Membantu memahami studi kasus konsistensi data pada sistem e-wallet FoodGo. | AI menjelaskan perbedaan Eventual Consistency, Sequential Consistency, dan Read-Your-Writes serta memberikan gambaran solusi untuk masalah saldo yang belum tersinkronisasi. | Penjelasan digunakan sebagai bahan pemahaman. Saya perlu memeriksa kembali konsep dan menyusun analisis dengan pemahaman sendiri. |
+| 13 November 2026 | ChatGPT | Membantu membuat simulasi replikasi data dan penerapan Read-Your-Writes menggunakan Python. | AI memberikan contoh alur dan kode simulasi untuk menunjukkan pembacaan data yang belum diperbarui serta proses menunggu replikasi. | Kode perlu diperiksa, dipahami, diuji, dan disesuaikan sendiri. |
+| 13 November 2026 | ChatGPT | Membantu menyusun log hasil simulasi untuk README.md. | AI membantu merapikan keluaran terminal menjadi bagian dokumentasi skenario tanpa dan dengan Read-Your-Writes. | Dokumentasi perlu dicocokkan dengan hasil program yang benar-benar dijalankan. |
