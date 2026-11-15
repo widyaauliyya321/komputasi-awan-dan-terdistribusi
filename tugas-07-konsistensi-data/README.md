@@ -39,6 +39,10 @@ Namun, karena sistem ini berkaitan dengan uang, FoodGo tetap perlu memastikan ba
 
 3. Gambarkan **diagram alir urutan (sequence diagram)** yang menunjukkan operasi read/write antara pelanggan, server Jakarta, server Bandung, dan proses replikasi — untuk skenario **tanpa** jaminan konsistensi (bug terjadi) DAN skenario **dengan** solusi yang kalian usulkan (bug teratasi). Pakai Mermaid (`sequenceDiagram`) di `README.md` — lihat contoh cara pakai di Tugas 2.
 
+### Hasil Analisis 3:
+## 1. Diagram tanpa jaminan konsistensi (bug terjadi)
+   Pada skenario ini, proses replikasi antara server Jakarta dan Bandung mengalami keterlambatan. Akibatnya, server Bandung masih membaca saldo lama meskipun pelanggan sudah berhasil melakukan top-up melalui server Jakarta.
+
 ```mermaid
 sequenceDiagram
     actor P as Pelanggan
@@ -66,6 +70,81 @@ sequenceDiagram
 
     Note over P,B: Terjadi bug karena server Bandung membaca saldo lama
 ```
+Penjelasan diagram :
+
+Pada kondisi ini, pelanggan memiliki saldo awal sebesar Rp50.000. Kemudian pelanggan melakukan top-up sebesar Rp50.000 melalui server Jakarta. Setelah proses top-up berhasil, saldo pelanggan di server Jakarta berubah menjadi Rp100.000.
+
+Namun, perubahan saldo tersebut belum langsung diterima oleh server Bandung karena proses replikasi masih berlangsung. Ketika pelanggan berpindah ke server Bandung dan memesan makanan seharga Rp75.000, server Bandung masih membaca saldo lama sebesar Rp50.000.
+
+Akibatnya, sistem menolak transaksi karena menganggap saldo pelanggan tidak mencukupi. Padahal, saldo sebenarnya sudah mencapai Rp100.000. Setelah itu, proses replikasi baru selesai dan server Bandung menerima pembaruan saldo.
+
+Dari kejadian tersebut dapat dilihat bahwa keterlambatan replikasi menyebabkan perbedaan data antara kedua server dan membuat transaksi pelanggan gagal.
+
+## 2. Diagram dengan solusi (bug teratasi)
+
+Pada skenario ini, FoodGo menerapkan Sequential Consistency dan pendekatan Client-Centric Consistency, khususnya Read-Your-Writes Consistency.
+
+Dengan pendekatan ini, server Bandung akan memastikan bahwa perubahan saldo yang sebelumnya dilakukan pelanggan sudah diterapkan sebelum membaca saldo untuk memproses transaksi.
+
+```mermaid
+sequenceDiagram
+    actor P as Pelanggan
+    participant J as Server Jakarta
+    participant R as Proses Replikasi
+    participant B as Server Bandung
+
+    Note over J,B: Saldo awal Rp50.000
+
+    P->>J: Melakukan top-up Rp50.000
+    J->>J: Update saldo menjadi Rp100.000
+    J->>J: Membuat write identifier
+    J-->>P: Top-up berhasil dan menerima write identifier
+
+    J->>R: Mengirim perubahan saldo
+
+    P->>B: Memesan makanan Rp75.000 dan mengirim write identifier
+    B->>B: Memeriksa status perubahan saldo
+
+    alt Perubahan saldo belum diterapkan
+        B->>R: Meminta update saldo terbaru
+        R->>B: Mengirim perubahan saldo Rp100.000
+        B->>B: Menerapkan perubahan saldo
+        B-->>R: Konfirmasi update diterapkan
+    else Perubahan saldo sudah diterapkan
+        B->>B: Melanjutkan proses
+    end
+
+    B->>B: Membaca saldo terbaru Rp100.000
+    B->>B: Memvalidasi dan memotong saldo Rp75.000
+    B-->>P: Pesanan berhasil, sisa saldo Rp25.000
+
+    Note over P,B: Read-Your-Writes memastikan saldo terbaru terbaca
+```
+
+Penjelasan diagram :
+
+Pada skenario ini, pelanggan melakukan top-up sebesar Rp50.000 melalui server Jakarta sehingga saldo berubah dari Rp50.000 menjadi Rp100.000. Setelah perubahan tersebut dicatat, server Jakarta memberikan identitas perubahan (write identifier) sebagai penanda bahwa pelanggan telah melakukan pembaruan saldo.
+
+Ketika pelanggan berpindah ke server Bandung untuk memesan makanan seharga Rp75.000, aplikasi turut mengirimkan informasi perubahan saldo sebelumnya.
+
+Server Bandung kemudian memeriksa apakah perubahan saldo tersebut sudah diterapkan. Jika belum, server Bandung meminta pembaruan dari proses replikasi dan menunggu sampai saldo terbaru berhasil diterapkan.
+
+Setelah pembaruan diterima, server Bandung membaca saldo sebesar Rp100.000. Karena saldo mencukupi untuk membayar pesanan sebesar Rp75.000, transaksi dapat diproses dan saldo pelanggan tersisa Rp25.000.
+
+Dengan cara ini, pelanggan tidak lagi mengalami penolakan transaksi hanya karena server Bandung masih membaca saldo lama.
+
+## 3. Perbandingan kedua diagram 
+
+| Aspek | Tanpa Solusi | Dengan Solusi |
+|---|---|---|
+| Saldo awal | Rp50.000 | Rp50.000 |
+| Top-up | Rp50.000 | Rp50.000 |
+| Saldo setelah top-up di Jakarta | Rp100.000 | Rp100.000 |
+| Kondisi replikasi | Terlambat | Dipastikan diterapkan sebelum membaca |
+| Saldo yang dibaca Bandung | Rp50.000 | Rp100.000 |
+| Pesanan makanan | Rp75.000 | Rp75.000 |
+| Hasil transaksi | Ditolak | Berhasil |
+| Sisa saldo | Tidak berubah | Rp25.000 |
 
 ### Bagian 2 — Simulasi (opsional, nilai tambah)
 
