@@ -15,6 +15,7 @@ Setelah mempertimbangkan beberapa model konsistensi, kelompok kami menyimpulkan 
 
 Selain itu, FoodGo dapat menerapkan Read-Your-Writes Consistency sebagai pendekatan tambahan agar pelanggan tetap dapat melihat perubahan saldo yang baru saja dilakukan meskipun berpindah server. Dengan penerapan tersebut, diharapkan masalah penolakan transaksi akibat pembacaan saldo lama dapat dikurangi dan informasi saldo pelanggan menjadi lebih konsisten.
 
+
 ## Simulasi (jika dikerjakan)
 - Hasil skenario naif vs Read-Your-Writes: 
 
