@@ -42,7 +42,12 @@ class ReplicationSystem:
         # TODO 1: replikasi ke Bandung TERTUNDA (simulasikan dengan
         # threading.Timer(REPLICATION_DELAY, ...) yang memanggil
         # self.bandung.write(user_id, saldo_baru, version) setelah delay.
-        print(f"[TODO] Replikasi ke Bandung akan tertunda {REPLICATION_DELAY} detik")
+        timer = threading.Timer(
+            REPLICATION_DELAY,
+            self.bandung.write,
+            args=(user_id, saldo_baru, version)
+        )
+        timer.start()
 
     def baca_saldo_naif(self, user_id: str, server: str) -> float:
         """Baca saldo TANPA mekanisme Read-Your-Writes - bisa saja stale."""
@@ -55,7 +60,15 @@ class ReplicationSystem:
         melihat versi lebih baru sebelumnya), tunggu/redirect ke replika yang
         sudah punya versi tersebut (di sini cukup simulasikan dengan polling
         sampai versi replika >= versi_minimal, atau redirect ke Jakarta)."""
-        pass
+        
+        replica = self.jakarta if server == "Jakarta" else self.bandung
+        
+        while replica.last_write_version.get(user_id, 0) < versi_minimal:
+            print("[Read-Your-Writes] Menunggu update saldo terbaru...")
+            time.sleep(0.1)
+
+        print("[Read-Your-Writes] Versi saldo sudah sesuai.")
+        return replica.read(user_id)
 
 
 def main():
@@ -75,7 +88,14 @@ def main():
     versi_terakhir = system.version_counter
     # TODO 3: panggil baca_saldo_read_your_writes dan tunjukkan hasilnya SELALU benar
     # walau dipanggil segera setelah top_up (< REPLICATION_DELAY detik).
+    saldo = system.baca_saldo_read_your_writes(
+        user_id,
+        "Bandung",
+        versi_terakhir
+    )
 
+    print("Baca saldo dari Bandung (Read-Your-Writes):", saldo)
+    print("-> Saldo terbaru berhasil terbaca:", saldo)
 
 if __name__ == "__main__":
     main()
