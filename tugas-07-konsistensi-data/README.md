@@ -45,24 +45,26 @@ sequenceDiagram
     participant R as Proses Replikasi
     participant B as Server Bandung
 
-    Note over J,B: Saldo awal di kedua server Rp50.000
+    Note over J,B: Saldo awal Rp50.000
 
-    P->>J: Request top-up Rp50.000
+    P->>J: Melakukan top-up Rp50.000
     J->>J: Update saldo menjadi Rp100.000
     J-->>P: Top-up berhasil
-    J->>R: Kirim perubahan saldo ke Bandung
 
-    Note over R,B: Replikasi masih berlangsung
+    J->>R: Mengirim perubahan saldo ke Bandung
 
-    P->>B: Pesan makanan Rp75.000
-    B->>B: Read saldo pelanggan
+    Note over R,B: Replikasi belum selesai
+
+    P->>B: Memesan makanan Rp75.000
+    B->>B: Membaca saldo pelanggan
     B->>B: Saldo terbaca Rp50.000
     B-->>P: Transaksi ditolak (saldo tidak cukup)
 
-    R-->>B: Kirim update saldo Rp100.000
-    B->>B: Update saldo menjadi Rp100.000
+    R-->>B: Mengirim update saldo Rp100.000
+    B->>B: Memperbarui saldo menjadi Rp100.000
 
-    Note over P,B: Bug terjadi karena Bandung membaca saldo lama
+    Note over P,B: Terjadi bug karena server Bandung membaca saldo lama
+
 
 ### Bagian 2 — Simulasi (opsional, nilai tambah)
 
